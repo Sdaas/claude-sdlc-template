@@ -1,0 +1,164 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Lint — ruff, mypy, shellcheck, sqlfluff
+  # ─────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb6ce540c88dd8fabb67  # v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Ruff lint
+        run: uv run ruff check .
+
+      - name: Ruff format check
+        run: uv run ruff format --check .
+
+      - name: Mypy
+        run: uv run mypy src/
+
+      - name: Shellcheck
+        run: |
+          if find scripts/ -name "*.sh" 2>/dev/null | grep -q .; then
+            shellcheck scripts/*.sh
+          else
+            echo "No shell scripts found — skipping shellcheck"
+          fi
+
+      - name: Sqlfluff
+        run: |
+          if [ -d "sql/" ] && find sql/ -name "*.sql" 2>/dev/null | grep -q .; then
+            uv run sqlfluff lint sql/
+          else
+            echo "No SQL files found — skipping sqlfluff"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Test — pytest across Python 3.11, 3.12, 3.13
+  # ─────────────────────────────────────────────────────────────────────────
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb6ce540c88dd8fabb67  # v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run unit tests
+        run: uv run pytest -m unit --cov --cov-report=xml --cov-report=term-missing
+
+      - name: Run integration tests
+        run: uv run pytest -m integration
+
+      - name: Install bats-core
+        run: |
+          if [ -d "tests/shell/" ] && find tests/shell/ -name "*.bats" 2>/dev/null | grep -q .; then
+            sudo apt-get update -q
+            sudo apt-get install -y bats
+          fi
+
+      - name: Run shell tests
+        run: |
+          if [ -d "tests/shell/" ] && find tests/shell/ -name "*.bats" 2>/dev/null | grep -q .; then
+            bats tests/shell/
+          else
+            echo "No bats tests found — skipping"
+          fi
+
+      - name: Upload coverage report
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673  # v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Dependency audit — pip-audit for known CVEs
+  # ─────────────────────────────────────────────────────────────────────────
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb6ce540c88dd8fabb67  # v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: pip-audit
+        run: uv run pip-audit
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Formula audit — brew audit on macOS (only if formula exists)
+  # ─────────────────────────────────────────────────────────────────────────
+  formula-audit:
+    name: Homebrew Formula Audit
+    runs-on: macos-latest
+    if: hashFiles('Formula/*.rb') != ''
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Audit Homebrew formula
+        run: brew audit --strict Formula/*.rb

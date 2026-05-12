@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# uv / virtualenv
+.venv/
+venv/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# mypy
+.mypy_cache/
+
+# ruff
+.ruff_cache/
+
+# Environment
+.env
+.env.local
+*.env
+
+# Session state — operational, not history
+SESSION_STATE.md
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Distribution
+dist/
+*.whl
+*.tar.gz
+
+# Release script state
+/tmp/.release-state-*
+
+# NOTE: .claude/ is intentionally NOT in .gitignore
+# Commit .claude/settings.json and .claude/hooks/ so every developer
+# and every Claude Code session gets the same environment automatically.

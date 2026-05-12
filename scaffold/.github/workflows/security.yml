@@ -1,0 +1,179 @@
+name: Security
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"    # every Monday at 09:00 UTC
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:        # allow manual trigger
+
+permissions:
+  contents: read
+  security-events: write    # required to upload SARIF results
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Dependency vulnerability scan — pip-audit with SARIF output
+  # ─────────────────────────────────────────────────────────────────────────
+  dependency-audit:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb6ce540c88dd8fabb67  # v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: pip-audit (standard output)
+        run: uv run pip-audit
+
+      - name: pip-audit (SARIF output for GitHub Security tab)
+        run: |
+          uv run pip-audit \
+            --format sarif \
+            --output pip-audit.sarif \
+            || true   # don't fail — SARIF upload captures the result
+
+      - name: Upload pip-audit SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: pip-audit.sarif
+          category: pip-audit
+        if: always()
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Bandit — Python security linting via ruff's S ruleset
+  # ─────────────────────────────────────────────────────────────────────────
+  bandit:
+    name: Python Security Lint (ruff S ruleset)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb6ce540c88dd8fabb67  # v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Ruff security ruleset (bandit equivalent)
+        run: uv run ruff check --select S .
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Secret scan — gitleaks across full git history
+  # ─────────────────────────────────────────────────────────────────────────
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          fetch-depth: 0             # full history — gitleaks scans all commits
+          persist-credentials: false
+
+      - name: Scan for secrets with gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # CodeQL — static analysis for Python
+  # ─────────────────────────────────────────────────────────────────────────
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          queries: security-extended   # broader than default security query pack
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: codeql-python
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Shell security — shellcheck on all scripts
+  # ─────────────────────────────────────────────────────────────────────────
+  shellcheck:
+    name: Shell Script Security (shellcheck)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Run shellcheck
+        run: |
+          if find scripts/ hooks/ -name "*.sh" 2>/dev/null | grep -q .; then
+            find scripts/ hooks/ -name "*.sh" -exec shellcheck {} +
+          else
+            echo "No shell scripts found — skipping shellcheck"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # SQL security — sqlfluff lint on all SQL files
+  # ─────────────────────────────────────────────────────────────────────────
+  sql-lint:
+    name: SQL Security Lint (sqlfluff)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb6ce540c88dd8fabb67  # v3
+        with:
+          version: "latest"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: sqlfluff lint
+        run: |
+          if [ -d "sql/" ] && find sql/ -name "*.sql" 2>/dev/null | grep -q .; then
+            uv run sqlfluff lint sql/
+          else
+            echo "No SQL files found — skipping sqlfluff"
+          fi

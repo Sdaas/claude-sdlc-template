@@ -1,0 +1,19 @@
+{
+  "env": {
+    "VIRTUAL_ENV": "${PWD}/.venv",
+    "PATH": "${PWD}/.venv/bin:$PATH"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/pre_tool_use.py"
+          }
+        ]
+      }
+    ]
+  }
+}
