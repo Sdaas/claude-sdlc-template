@@ -4,6 +4,8 @@ This document explains what every file in this template does, why it exists,
 and how to use it throughout a typical software development cycle. Read this
 first before reading anything else.
 
+Thi document (OVERVIEW.md) is the user-facing reference — written for developers who will use the template. It explains what the system is, walks through a complete development cycle example, and shows gate sequences and enforcement layers. Polished, narrative, meant to be read once to understand how everything fits together.
+
 ---
 
 ## What This Template Is
