@@ -102,7 +102,8 @@ Session state saved:
 Next session suggested action:
   {one-line suggested first action}
 
-Safe to close this session.
+Type "/quit" to exit claude. 
+   Dont run quit, exit or /exit - that will trigger a loop
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
