@@ -1,10 +1,16 @@
 # claude-sdlc-template — Context and Handoff Document
 
 
-This document (CONTEXT.md) is written for someone (or Claude) working on the template
-itself. It contains the design decisions and why they were made (Section 3), known gaps and TODOs (Section 4), a prioritized task list (Section 5), and the dependency map between files (Section 8). It's a living working document, not a user guide.
+This document is the README for the `claude-sdlc-template` repo. It is written
+for someone (or Claude) working on the template itself — not for developers using
+the template to build a project. That audience should read `scaffold/OVERVIEW.md`.
 
-It captures every design decision, known gap, and suggested improvement from the original design conversation. Read this before touching any file in the repo.
+It contains the design decisions and why they were made (Section 3), known gaps
+and TODOs (Section 4), a prioritized task list (Section 5), and the dependency
+map between files (Section 8). It's a living working document, not a user guide.
+
+It captures every design decision, known gap, and suggested improvement from the
+original design conversation. Read this before touching any file in the repo.
 
 **Author:** Soumendra Daas + Claude (claude.ai conversation, May 2026)
 **Status:** Initial version complete — ready for Claude Code refinement
@@ -36,15 +42,46 @@ Claude drives.
 
 ---
 
-## 2. Complete File Inventory
+## 2. File Inventory
+
+There are two distinct audiences for this repo:
+
+- **Template maintainers** — developers working on `claude-sdlc-template` itself.
+  They interact with the repo root files only.
+- **Project developers** — developers who have bootstrapped a new project using
+  this template. They never see the template repo; they see only what `bootstrap.sh`
+  copied from `scaffold/`.
+
+### 2a. Template repo (maintainer view)
+
+These files live at the repo root and are never copied to bootstrapped projects.
 
 ```
 claude-sdlc-template/
 │
-├── LICENSE                          MIT license — Soumendra Daas 2026
+├── CONTEXT.md      This file — repo README and maintainer working doc
+├── LICENSE         MIT license for the template repo (Soumendra Daas 2026)
+├── docs/           Template-level session artifacts (retrospectives, etc.)
+└── scripts/
+    └── bootstrap.sh    Interview-driven project bootstrapper (15 steps)
+```
+
+`scripts/bootstrap.sh` is the only executable that lives here permanently.
+It reads from `scaffold/` and writes into a new project directory.
+
+### 2b. Scaffold (project developer view)
+
+Everything in `scaffold/` is copied by `bootstrap.sh` into bootstrapped projects.
+The paths below show how they appear in the destination project (without the
+`scaffold/` prefix).
+
+```
+{project}/
+│
 ├── CLAUDE.md                        Behavioral contract — 15 sections
 ├── OVERVIEW.md                      System overview + full dev cycle walkthrough
-├── README.md                        Template repo README with badges
+├── README.md                        Project README (badges, setup, usage)
+├── LICENSE                          MIT license — {AUTHOR_NAME} {YEAR} (placeholder)
 │
 ├── .claude/
 │   ├── commands/                    Slash commands — workflow triggers
@@ -60,52 +97,50 @@ claude-sdlc-template/
 │   │   ├── release.md               /release — release process co-pilot
 │   │   └── exit.md                  /exit — graceful session end
 │   │
-│   └── skills/                      Knowledge packages — auto-loaded by Claude
-│       ├── python-cli/SKILL.md      Project structure, CLI, shell, SQL conventions
-│       ├── uv-packaging/SKILL.md    uv + pyproject.toml opinionated defaults
-│       ├── homebrew/SKILL.md        Formula conventions, audit rules, tap setup
-│       ├── tdd/SKILL.md             TDD process, pytest, bats conventions
-│       ├── design-doc/SKILL.md      Design doc template and review protocol
-│       ├── code-review/SKILL.md     Code review checklist and dialogue protocol
-│       ├── security/SKILL.md        Full security checklist (Python, shell, SQL)
-│       ├── git-workflow/SKILL.md    Branching, commits, PRs, post-push monitoring
-│       ├── github-actions/SKILL.md  CI/CD workflows, failure diagnosis, remediation
-│       ├── release/SKILL.md         Release process specification (17 steps)
-│       ├── standup/SKILL.md         Session startup protocol — what to read, format
-│       ├── retrospective/SKILL.md   Session analysis — 4 dimensions, pattern detection
-│       └── workflows/SKILL.md       Gate sequences for feature, bugfix, trivial
+│   ├── skills/                      Knowledge packages — auto-loaded by Claude
+│   │   ├── python-cli/SKILL.md      Project structure, CLI, shell conventions
+│   │   ├── uv-packaging/SKILL.md    uv + pyproject.toml opinionated defaults
+│   │   ├── homebrew/SKILL.md        Formula conventions, audit rules, tap setup
+│   │   ├── tdd/SKILL.md             TDD process, pytest, bats conventions
+│   │   ├── design-doc/SKILL.md      Design doc template and review protocol
+│   │   ├── code-review/SKILL.md     Code review checklist and dialogue protocol
+│   │   ├── security/SKILL.md        Full security checklist (Python, shell)
+│   │   ├── git-workflow/SKILL.md    Branching, commits, PRs, post-push monitoring
+│   │   ├── github-actions/SKILL.md  CI/CD workflows, failure diagnosis, remediation
+│   │   ├── release/SKILL.md         Release process specification (17 steps)
+│   │   ├── standup/SKILL.md         Session startup protocol — what to read, format
+│   │   ├── retrospective/SKILL.md   Session analysis — 4 dimensions, pattern detection
+│   │   └── workflows/SKILL.md       Gate sequences for feature, bugfix, trivial
+│   │
+│   ├── settings.json                Injects VIRTUAL_ENV into every Claude shell
+│   └── hooks/
+│       └── pre_tool_use.py          Blocks bare python/pip — enforces uv run
 │
-├── scripts/
-│   ├── bootstrap.sh                 Interview-driven project init (15 steps)
-│   └── release.sh                   Interactive release process (17 steps)
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                   Lint + test (3 Python versions) + audit
+│       ├── release.yml              Build + GitHub Release + Homebrew verify
+│       └── security.yml             CVE scan + secret scan + CodeQL (weekly)
 │
 ├── hooks/
 │   ├── pre-commit-tdd-check.sh      Blocks commits: src/ changed without tests
 │   └── pre-push-tests.sh            Blocks pushes: full test suite must pass
 │
-├── scaffold/                        Files copied into new projects by bootstrap.sh
-│   ├── .claude/
-│   │   ├── settings.json            Injects VIRTUAL_ENV into every Claude shell
-│   │   └── hooks/
-│   │       └── pre_tool_use.py      Blocks bare python/pip — enforces uv run
-│   ├── .github/
-│   │   └── workflows/
-│   │       ├── ci.yml               Lint + test (3 Python versions) + audit
-│   │       ├── release.yml          Build + GitHub Release + Homebrew verify
-│   │       └── security.yml         CVE scan + secret scan + CodeQL (weekly)
-│   ├── src/{package}/               Placeholder package structure
-│   ├── tests/                       Placeholder test structure
-│   ├── sql/                         Placeholder SQL structure
-│   ├── docs/decisions/              Placeholder for decision artifacts
-│   ├── docs/retrospectives/         Placeholder for retrospective artifacts
-│   ├── pyproject.toml.template      Opinionated Python packaging defaults
-│   ├── pre-commit-config.yaml.template
-│   └── gitignore.template
+├── scripts/
+│   └── release.sh                   Interactive release process (17 steps)
 │
-└── docs/
-    ├── CONTRIBUTING.md              Contribution guidelines
-    ├── DEVELOPER_GUIDE.md           Full setup, workflow, troubleshooting guide
-    └── SDLC_PROCESS.md              Human-readable SDLC reference
+├── docs/
+│   ├── CONTRIBUTING.md              Contribution guidelines
+│   ├── DEVELOPER_GUIDE.md           Full setup, workflow, troubleshooting guide
+│   ├── SDLC_PROCESS.md             Human-readable SDLC reference
+│   ├── decisions/                   Decision artifacts (DESIGN, PLAN, CODE_REVIEW)
+│   └── retrospectives/              Session retrospective artifacts
+│
+├── src/{package}/                   Placeholder package structure
+├── tests/                           Placeholder test structure
+├── pyproject.toml.template          Opinionated Python packaging defaults
+├── pre-commit-config.yaml.template  Pre-commit hooks: ruff, mypy, shellcheck, gitleaks
+└── gitignore.template               Standard ignore rules + SESSION_STATE.md
 ```
 
 ---
