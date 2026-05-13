@@ -22,6 +22,7 @@ brew install {project-name}
 ```bash
 {project-name} --version
 {project-name} --help
+{project-name}
 ```
 
 ---
@@ -70,6 +71,40 @@ Default configuration location: `~/.config/{project-name}/`
 
 - macOS (primary platform — installed via Homebrew)
 - Python 3.11+ (managed automatically by Homebrew)
+
+---
+
+## First-time setup
+
+After cloning, run these commands to confirm everything is wired up before writing any code:
+
+```bash
+uv sync
+uv run pytest
+uv run {project-name} --help
+uv run {project-name}
+uv run {project-name} --name you
+```
+
+All commands should exit cleanly. If pytest fails, check the output for setup issues. If the CLI fails, verify `uv sync` completed without errors.
+
+**What's happening when you run `uv run {project-name}`:**
+
+The entry point is defined in `pyproject.toml`:
+
+```toml
+[project.scripts]
+{project-name} = "{package}.cli:main"
+```
+
+This maps the `{project-name}` command to the `main` function in `src/{package}/cli.py`. That function is a Click command with one option — `--name` — which defaults to `world`. So:
+
+- `uv run {project-name}` prints `hello world` (the default)
+- `uv run {project-name} --name alice` prints `hello alice`
+- `uv run {project-name} --help` shows the help text with available options
+- `uv run {project-name} --version` prints the current version from `pyproject.toml`
+
+This placeholder command is your starting point. Replace `cli.py` with the real logic for your project.
 
 ---
 

@@ -27,7 +27,7 @@ fi
 # src/ changed but no tests changed — check for exemption marker
 # A commit can be exempted by including [skip-tdd] in the commit message
 # This requires --no-verify or a specific marker and is logged
-COMMIT_MSG_FILE="${GIT_DIR}/COMMIT_EDITMSG"
+COMMIT_MSG_FILE="$(git rev-parse --git-dir)/COMMIT_EDITMSG"
 if [[ -f "${COMMIT_MSG_FILE}" ]]; then
     if grep -q "\[skip-tdd\]" "${COMMIT_MSG_FILE}"; then
         echo "⚠ TDD check skipped — [skip-tdd] marker found."

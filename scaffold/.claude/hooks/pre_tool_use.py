@@ -38,7 +38,7 @@ if tool_name == "Bash":
 
     for prefix in blocked_prefixes:
         if command.startswith(prefix) or command == prefix.strip():
-            remainder = command[len(prefix):].strip()
+            remainder = command[len(prefix) :].strip()
             base = prefix.strip()
 
             if base in ("pip", "pip3"):
@@ -54,10 +54,14 @@ if tool_name == "Bash":
                     f"virtualenv. Use '{suggestion}' instead."
                 )
 
-            print(json.dumps({
-                "decision": "block",
-                "reason": reason,
-            }))
+            print(  # noqa: T201
+                json.dumps(
+                    {
+                        "decision": "block",
+                        "reason": reason,
+                    }
+                )
+            )
             sys.exit(0)
 
-print(json.dumps({"decision": "approve"}))
+print(json.dumps({"decision": "approve"}))  # noqa: T201

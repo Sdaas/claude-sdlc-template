@@ -12,12 +12,15 @@ repos:
   # ---------------------------------------------------------------------------
   # Mypy — static type checking
   # ---------------------------------------------------------------------------
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
+  - repo: local
     hooks:
       - id: mypy
+        name: mypy
+        entry: uv run mypy
+        language: system
         args: [--strict]
-        additional_dependencies: [types-all]
+        types: [python]
+        pass_filenames: false
 
   # ---------------------------------------------------------------------------
   # Shellcheck — shell script linting
@@ -57,7 +60,7 @@ repos:
         entry: hooks/pre-commit-tdd-check.sh
         language: script
         pass_filenames: false
-        stages: [commit]
+        stages: [pre-commit]
 
   # ---------------------------------------------------------------------------
   # General quality hooks

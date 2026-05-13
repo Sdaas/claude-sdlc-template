@@ -12,3 +12,15 @@ def test_version() -> None:
 def test_help() -> None:
     result = CliRunner().invoke(main, ["--help"])
     assert result.exit_code == 0
+
+
+def test_default_greeting() -> None:
+    result = CliRunner().invoke(main, [])
+    assert result.exit_code == 0
+    assert result.output.strip() == "hello world"
+
+
+def test_named_greeting() -> None:
+    result = CliRunner().invoke(main, ["--name", "alice"])
+    assert result.exit_code == 0
+    assert result.output.strip() == "hello alice"

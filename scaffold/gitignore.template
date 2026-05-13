@@ -61,3 +61,5 @@ dist/
 # NOTE: .claude/ is intentionally NOT in .gitignore
 # Commit .claude/settings.json and .claude/hooks/ so every developer
 # and every Claude Code session gets the same environment automatically.
+# settings.local.json is machine-specific (statusline, personal prefs) — do not commit.
+.claude/settings.local.json
