@@ -10,7 +10,7 @@ description: >
 # Workflow Definitions
 
 This skill defines the exact execution sequence for every workflow type in
-claude-sdlc-template. When a workflow is triggered, Claude loads this skill
+this project. When a workflow is triggered, Claude loads this skill
 and follows the relevant sequence step by step. No improvisation. No skipping.
 No reordering.
 

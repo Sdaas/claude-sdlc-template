@@ -4,14 +4,14 @@ description: >
   Load this skill for any task involving test-driven development, writing tests,
   pytest conventions, bats tests for shell scripts, test fixtures, coverage,
   mocking, or the TDD cycle. Applies to all projects built from
-  claude-sdlc-template. This skill governs how Claude approaches every
+  this project. This skill governs how Claude approaches every
   non-trivial code change.
 ---
 
 # TDD Conventions and Process
 
 This skill defines the test-driven development process and testing conventions
-for all projects built from claude-sdlc-template. TDD is not optional. It is
+for this project. TDD is not optional. It is
 the only permitted development method for STANDARD changes.
 
 ---

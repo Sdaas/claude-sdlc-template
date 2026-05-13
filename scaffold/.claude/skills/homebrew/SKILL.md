@@ -3,12 +3,12 @@ name: homebrew
 description: >
   Load this skill for any task involving Homebrew formula creation, updating,
   auditing, versioning, bottle builds, or distributing a Python CLI tool via
-  Homebrew. Applies to all projects built from claude-sdlc-template.
+  Homebrew. Applies to this project.
 ---
 
 # Homebrew Formula Conventions
 
-This skill defines how Python CLI tools built from claude-sdlc-template are
+This skill defines how Python CLI tools using this SDLC are
 packaged and distributed via Homebrew. Homebrew is the primary distribution
 channel for these tools.
 

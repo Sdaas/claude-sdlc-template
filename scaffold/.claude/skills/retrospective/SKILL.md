@@ -12,7 +12,7 @@ model: claude-sonnet-4-6
 # Retrospective Convention
 
 This skill defines the session retrospective process for all projects built
-from claude-sdlc-template. The retrospective analyses the full session to
+using this SDLC. The retrospective analyses the full session to
 surface patterns, inefficiencies, and improvements — making each session
 better than the last.
 

@@ -4,13 +4,13 @@ description: >
   Load this skill for any task involving Python packaging, dependency management,
   pyproject.toml configuration, uv commands, build configuration, linting setup,
   type checking, or test runner configuration. Applies to all projects built from
-  claude-sdlc-template.
+  this project.
 ---
 
 # uv + pyproject.toml Packaging Conventions
 
 This skill defines the canonical packaging setup for all Python CLI projects built
-from claude-sdlc-template. Every configuration here is opinionated and enforced.
+using this SDLC. Every configuration here is opinionated and enforced.
 Deviations require explicit justification in PLAN.md.
 
 ---

@@ -61,13 +61,14 @@ claude-sdlc-template/
 │
 ├── CONTEXT.md      This file — repo README and maintainer working doc
 ├── LICENSE         MIT license for the template repo (Soumendra Daas 2026)
+├── bootstrap.sh    Interview-driven project bootstrapper (15 steps) — run from repo root
 ├── docs/           Template-level session artifacts (retrospectives, etc.)
-└── scripts/
-    └── bootstrap.sh    Interview-driven project bootstrapper (15 steps)
+└── tests/
+    └── test_bootstrap.sh   Automated test suite for bootstrap.sh
 ```
 
-`scripts/bootstrap.sh` is the only executable that lives here permanently.
-It reads from `scaffold/` and writes into a new project directory.
+`bootstrap.sh` lives at the repo root. It reads from `scaffold/` and writes
+into a new project directory specified during the interview (or via `--dest`).
 
 ### 2b. Scaffold (project developer view)
 
@@ -333,36 +334,24 @@ create it with the correct initial structure if missing.
 (Unreleased section + comparison links pattern), and have `bootstrap.sh`
 copy it.
 
-### 4.5 No `src/{package}/cli.py` Starter Content
+### 4.5 ~~No `src/{package}/cli.py` Starter Content~~ — RESOLVED
 
-`bootstrap.sh` creates `src/{package}/cli.py` as an empty file. A new
-developer opening the project in Claude Code will need to build the CLI
-from scratch with no starting point.
+Scaffold now includes a minimal `cli.py` with `--version` (hardcoded `0.0.0`)
+and `--help` via click. Version will be wired to `importlib.metadata` as part
+of the release process in phase 2.
 
-**Fix needed:** Add a minimal but functional `cli.py` starter to the scaffold
-with a working `--version` flag (using `importlib.metadata`) and `--help`.
-This gives the first `/feature` something real to build on top of.
+### 4.6 ~~No Starter Test File~~ — RESOLVED
 
-### 4.6 No Starter Test File
+`scaffold/tests/unit/test_cli.py` now tests `--version` and `--help`. Used
+by the bootstrap test suite to validate the bootstrapped project end-to-end.
 
-Similarly, `tests/conftest.py` is empty and `tests/unit/` has no files.
-The first TDD cycle requires Claude to create the entire test structure.
+### 4.7 ~~`bootstrap.sh` Not Tested End-to-End~~ — RESOLVED
 
-**Fix needed:** Add `tests/unit/test_cli.py` with a minimal test for
-`--version` and `--help` flags. This validates the scaffold works and
-gives Claude a pattern to follow for the first real feature.
-
-### 4.7 `bootstrap.sh` Not Tested End-to-End
-
-The bootstrap script was written but not actually run. There are likely
-small issues: path assumptions, sed syntax on macOS vs Linux, the
-`SCRIPT_DIR`/`TEMPLATE_ROOT` detection for copying `.claude/` files.
-
-**Fix needed:** Run `bootstrap.sh` on a real machine and fix any issues.
-Pay particular attention to:
-- The `sed -i ''` syntax (macOS requires the empty string argument)
-- The scaffold `.claude/` copy logic (SCRIPT_DIR detection)
-- Pre-commit running on initial files (Step 15)
+`bootstrap.sh` has been rewritten and moved to the repo root. It now creates
+a new project in a developer-specified destination directory (rather than
+modifying itself in place). A full test suite lives at `tests/test_bootstrap.sh`
+with 36 assertions covering structure, placeholder replacement, git init, CLI
+runnability, and unit test pass. macOS `sed -i ''` syntax confirmed working.
 
 ### 4.8 `release.sh` Not Tested End-to-End
 

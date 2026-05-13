@@ -3,7 +3,7 @@ name: code-review
 description: >
   Load this skill for any task involving code review, reviewing a pull request,
   evaluating code quality, or conducting the code review gate in the STANDARD
-  workflow. Applies to all projects built from claude-sdlc-template. Triggered
+  workflow. Triggered
   automatically after CODE gate completes, via /code-review command.
 ---
 

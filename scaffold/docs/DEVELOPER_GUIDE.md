@@ -1,8 +1,7 @@
 # Developer Guide — {project-name}
 
 This guide covers everything a developer needs to set up, understand, and
-work effectively on this project using Claude Code and the claude-sdlc-template
-workflow.
+work effectively on this project using Claude Code and the SDLC workflow.
 
 Read OVERVIEW.md first for the conceptual overview. This document is the
 practical setup and reference guide.
@@ -79,19 +78,7 @@ uv add --dev sqlfluff
 
 ## Initial Setup
 
-### 1. Clone and bootstrap
-
-If you are the project owner starting from the template:
-
-```bash
-git clone https://github.com/{org}/claude-sdlc-template.git {project-name}
-cd {project-name}
-./scripts/bootstrap.sh
-```
-
-The bootstrap script will interview you and configure everything.
-
-If you are a contributor joining an existing project:
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/{org}/{project-name}.git

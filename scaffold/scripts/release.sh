@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/release.sh — Interactive release script for claude-sdlc-template projects
+# scripts/release.sh — Interactive release script for {project-name}
 #
 # Usage: ./scripts/release.sh [--dry-run]
 #

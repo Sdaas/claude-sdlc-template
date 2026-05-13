@@ -9,8 +9,8 @@ description: >
 
 # Release Process Conventions
 
-This skill defines the complete release process for all projects built from
-claude-sdlc-template. The release is driven by `scripts/release.sh`, which
+This skill defines the complete release process for
+this project. The release is driven by `scripts/release.sh`, which
 runs interactively. Claude acts as co-pilot: explaining each step, interpreting
 output, and flagging problems before they become incidents.
 

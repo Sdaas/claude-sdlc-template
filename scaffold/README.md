@@ -75,7 +75,7 @@ Default configuration location: `~/.config/{project-name}/`
 
 ## Development
 
-This project uses [claude-sdlc-template](https://github.com/{org}/claude-sdlc-template)
+This project uses [claude-sdlc-template](https://github.com/Sdaas/claude-sdlc-template)
 for development workflow management. See the developer documentation:
 
 - [OVERVIEW.md](docs/OVERVIEW.md) — conceptual overview of the development environment

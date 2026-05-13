@@ -3,21 +3,21 @@ name: git-workflow
 description: >
   Load this skill for any task involving git operations, branch naming, commit
   messages, pull requests, merge strategy, or git history management. Applies
-  to all projects built from claude-sdlc-template.
+  to this project.
 ---
 
 # Git Workflow Conventions
 
 This skill defines the branching strategy, commit conventions, pull request
-process, and git history standards for all projects built from
-claude-sdlc-template. These conventions are enforced by pre-commit hooks,
+process, and git history standards for
+this project. These conventions are enforced by pre-commit hooks,
 pre-push hooks, and GitHub Actions.
 
 ---
 
 ## 1. Branching Strategy
 
-This template uses a simplified trunk-based development model appropriate
+This project uses a simplified trunk-based development model appropriate
 for solo and small-team CLI tool development.
 
 ### Branch Structure

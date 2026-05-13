@@ -10,8 +10,8 @@ model: claude-haiku-4-5
 
 # Standup Convention
 
-This skill defines the session startup process for all projects built from
-claude-sdlc-template. The standup runs at the start of every session before
+This skill defines the session startup process for
+this project. The standup runs at the start of every session before
 any task is accepted. Its purpose is to reconstruct the full project state
 so Claude can act as an informed co-pilot from the first message, not after
 several minutes of catch-up.

@@ -3,13 +3,13 @@ name: python-cli
 description: >
   Load this skill for any task involving Python CLI project structure, conventions,
   entry points, argument parsing, shell scripts, SQL, logging, or test organisation.
-  Applies to all projects built from claude-sdlc-template.
+  Applies to this project.
 ---
 
 # Python CLI Project Conventions
 
 This skill defines the structural and coding conventions for all Python CLI projects
-built from claude-sdlc-template. These are opinionated defaults. Deviations require
+built using this SDLC. These are opinionated defaults. Deviations require
 explicit justification in PLAN.md.
 
 ---

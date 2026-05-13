@@ -3,13 +3,13 @@ name: github-actions
 description: >
   Load this skill for any task involving GitHub Actions workflows, CI/CD
   pipeline configuration, workflow security, job structure, or automated
-  gates. Applies to all projects built from claude-sdlc-template.
+  gates. Applies to this project.
 ---
 
 # GitHub Actions Conventions
 
 This skill defines the CI/CD pipeline structure, workflow conventions, security
-standards, and job organisation for all projects built from claude-sdlc-template.
+standards, and job organisation for this project.
 GitHub Actions is the automated gate enforcer — it runs the checks that pre-commit
 and pre-push hooks run locally, plus additional checks that only make sense in CI.
 

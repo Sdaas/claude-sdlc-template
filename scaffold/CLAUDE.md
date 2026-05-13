@@ -1,4 +1,4 @@
-# CLAUDE.md — Behavioral Contract for claude-sdlc-template
+# CLAUDE.md — Behavioral Contract for {project-name}
 
 This file governs how Claude behaves in every session. These are not suggestions.
 They are mandatory process rules. Deviating from them requires explicit human approval,

@@ -1,17 +1,15 @@
-# claude-sdlc-template — Overview
+# {project-name} — Overview
 
-This document explains what every file in this template does, why it exists,
-and how to use it throughout a typical software development cycle. Read this
-first before reading anything else.
-
-Thi document (OVERVIEW.md) is the user-facing reference — written for developers who will use the template. It explains what the system is, walks through a complete development cycle example, and shows gate sequences and enforcement layers. Polished, narrative, meant to be read once to understand how everything fits together.
+This document explains the development system for {project-name} — what every
+file does, why it exists, and how to use it throughout a typical software
+development cycle. Read this first before reading anything else.
 
 ---
 
-## What This Template Is
+## What This System Is
 
-`claude-sdlc-template` is a structured development environment for Python CLI
-tools. It combines three things into one cohesive system:
+{project-name} is developed using a structured Claude Code environment for
+Python CLI tools. It combines three things into one cohesive system:
 
 **A project scaffold** — the directory structure, packaging configuration,
 CI/CD workflows, and tooling that every project needs.
@@ -36,57 +34,54 @@ structural, not discretionary.
 ## Repository Map
 
 ```
-claude-sdlc-template/
+{project-name}/
 │
 ├── CLAUDE.md                    The behavioral contract — loaded automatically
 │                                by Claude Code. Defines every rule Claude follows.
-│
 ├── OVERVIEW.md                  This file.
-│
+├── README.md                    Project README — badges, setup, usage.
+├── LICENSE                      MIT license.
 ├── SESSION_STATE.md             Written by /exit, read by /standup.
 │                                Ephemeral — in .gitignore. Not project history.
 │
 ├── .claude/
-│   └── commands/                Slash commands — explicit workflow triggers.
-│       ├── feature.md           /feature "desc" — start a feature
-│       ├── bugfix.md            /bugfix "desc"  — start a bug fix
-│       ├── trivial.md           /trivial "desc" — make a trivial change
-│       ├── standup.md           /standup        — session startup summary
-│       ├── retrospective.md     /retrospective  — session analysis
-│       ├── design-review.md     /design-review  — review a design doc
-│       ├── plan-review.md       /plan-review    — review a plan
-│       ├── code-review.md       /code-review    — review code + security
-│       ├── monitor.md           /monitor        — watch CI and remediate
-│       ├── release.md           /release        — co-pilot the release
-│       └── exit.md              /exit           — graceful session end
-│
-├── .claude/skills/              Knowledge packages — auto-loaded by Claude
-│   ├── python-cli/              Project structure, CLI conventions, shell, SQL
-│   ├── uv-packaging/            uv + pyproject.toml opinionated defaults
-│   ├── homebrew/                Homebrew formula conventions and audit rules
-│   ├── tdd/                     TDD process, pytest, bats conventions
-│   ├── design-doc/              Design doc template and review protocol
-│   ├── code-review/             Code review checklist and dialogue protocol
-│   ├── security/                Full security checklist for Python CLIs
-│   ├── git-workflow/            Branching, commits, PRs, monitoring
-│   ├── github-actions/          CI/CD workflows, failure diagnosis
-│   ├── release/                 Release process specification
-│   ├── standup/                 Session startup protocol
-│   ├── retrospective/           Session analysis protocol
-│   └── workflows/               Gate sequences for feature, bugfix, trivial
-│
-├── scaffold/                    Files copied into new projects
-│   ├── pyproject.toml.template  Opinionated Python packaging defaults
-│   ├── .pre-commit-config.yaml  Pre-commit hooks: ruff, mypy, shellcheck,
-│   │                            sqlfluff, gitleaks, TDD check
-│   └── .gitignore               Standard ignore rules + SESSION_STATE.md
+│   ├── commands/                Slash commands — explicit workflow triggers.
+│   │   ├── feature.md           /feature "desc" — start a feature
+│   │   ├── bugfix.md            /bugfix "desc"  — start a bug fix
+│   │   ├── trivial.md           /trivial "desc" — make a trivial change
+│   │   ├── standup.md           /standup        — session startup summary
+│   │   ├── retrospective.md     /retrospective  — session analysis
+│   │   ├── design-review.md     /design-review  — review a design doc
+│   │   ├── plan-review.md       /plan-review    — review a plan
+│   │   ├── code-review.md       /code-review    — review code + security
+│   │   ├── monitor.md           /monitor        — watch CI and remediate
+│   │   ├── release.md           /release        — co-pilot the release
+│   │   └── exit.md              /exit           — graceful session end
+│   │
+│   ├── skills/                  Knowledge packages — auto-loaded by Claude
+│   │   ├── python-cli/          Project structure, CLI conventions, shell, SQL
+│   │   ├── uv-packaging/        uv + pyproject.toml opinionated defaults
+│   │   ├── homebrew/            Homebrew formula conventions and audit rules
+│   │   ├── tdd/                 TDD process, pytest, bats conventions
+│   │   ├── design-doc/          Design doc template and review protocol
+│   │   ├── code-review/         Code review checklist and dialogue protocol
+│   │   ├── security/            Full security checklist for Python CLIs
+│   │   ├── git-workflow/        Branching, commits, PRs, monitoring
+│   │   ├── github-actions/      CI/CD workflows, failure diagnosis
+│   │   ├── release/             Release process specification
+│   │   ├── standup/             Session startup protocol
+│   │   ├── retrospective/       Session analysis protocol
+│   │   └── workflows/           Gate sequences for feature, bugfix, trivial
+│   │
+│   ├── settings.json            Injects VIRTUAL_ENV into every Claude shell
+│   └── hooks/
+│       └── pre_tool_use.py      Blocks bare python/pip — enforces uv run
 │
 ├── hooks/                       Local git hook scripts
 │   ├── pre-commit-tdd-check.sh  Blocks commits: src changed without tests
 │   └── pre-push-tests.sh        Blocks pushes: full test suite must pass
 │
 ├── scripts/
-│   ├── bootstrap.sh             Initialise a new project from this template
 │   └── release.sh               Interactive 17-step release process
 │
 ├── .github/workflows/
@@ -100,10 +95,25 @@ claude-sdlc-template/
 │                                pip-audit CVE scan (SARIF), gitleaks secret scan,
 │                                CodeQL Python analysis, ruff S ruleset, shellcheck
 │
-└── docs/
-    ├── CONTRIBUTING.md          How to contribute to a project
-    ├── DEVELOPER_GUIDE.md       Full setup and workflow guide for developers
-    └── SDLC_PROCESS.md          Human-readable SDLC reference
+├── docs/
+│   ├── CONTRIBUTING.md          How to contribute
+│   ├── DEVELOPER_GUIDE.md       Full setup and workflow guide
+│   ├── SDLC_PROCESS.md          Human-readable SDLC reference
+│   ├── decisions/               Decision artifacts per feature/fix
+│   └── retrospectives/          Session retrospective artifacts
+│
+├── src/{package}/               The Python package
+│   ├── __init__.py
+│   ├── cli.py                   Click CLI entry point
+│   ├── commands/                Subcommand modules
+│   └── core/                    Business logic
+│
+├── tests/
+│   ├── unit/                    Pure unit tests (no external deps)
+│   ├── integration/             Cross-boundary tests
+│   └── shell/                   bats shell tests for scripts
+│
+└── pyproject.toml               Package config, dependencies, tool config
 ```
 
 ---
@@ -436,7 +446,7 @@ and waits for your confirmation before proceeding.
 
 ## Enforcement Layers
 
-Quality in this template is structural. Here is what enforces each rule:
+Quality in this project is structural. Here is what enforces each rule:
 
 | Rule                              | Enforced by                          |
 |-----------------------------------|--------------------------------------|
@@ -485,21 +495,28 @@ and escalate structural fixes when the same problem appears repeatedly.
 
 ---
 
-## Getting Started
+## Starting a Session
 
-1. Clone this template:
+1. Open Claude Code:
    ```bash
-   git clone https://github.com/{org}/claude-sdlc-template.git my-new-project
-   cd my-new-project
+   cd {project-name}
+   claude
    ```
 
-2. Run bootstrap:
-   ```bash
-   ./scripts/bootstrap.sh my-project myproject "Your Name" "you@example.com" "your-org"
+2. Claude runs `/standup` automatically — it reads git log, open artifacts,
+   and CI status, then presents a summary of what's done, what's in progress,
+   and a suggested first action.
+
+3. Begin work using the appropriate slash command:
+   ```
+   /feature "description"    — new feature
+   /bugfix "description"     — bug fix
+   /trivial "description"    — small change
    ```
 
-3. Follow the bootstrap output to connect your GitHub remote and set up
-   the Homebrew tap (see `DEVELOPER_GUIDE.md`).
+4. End every session with `/exit` to save state and generate the retrospective.
+
+See `docs/DEVELOPER_GUIDE.md` for full setup instructions and troubleshooting.
 
 4. Open Claude Code in the project directory.
 

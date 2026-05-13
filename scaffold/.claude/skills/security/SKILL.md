@@ -4,7 +4,7 @@ description: >
   Load this skill for any task involving security review, evaluating security
   implications of a change, checking for vulnerabilities, or conducting the
   security review section of a code review. Applies to all STANDARD changes
-  in projects built from claude-sdlc-template. Security review is mandatory
+  Security review is mandatory
   and runs as part of every code review — it is never a separate optional step.
 ---
 

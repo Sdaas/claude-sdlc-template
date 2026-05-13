@@ -4,7 +4,7 @@ description: >
   Load this skill for any task involving writing a design document, reviewing a
   design document, or evaluating whether a proposed design is ready for
   implementation. Applies to all STANDARD changes in projects built from
-  claude-sdlc-template. Triggered by /feature and non-trivial /bugfix workflows.
+  this project. Triggered by /feature and non-trivial /bugfix workflows.
 ---
 
 # Design Document Conventions
