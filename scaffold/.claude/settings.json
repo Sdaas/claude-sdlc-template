@@ -1,7 +1,6 @@
 {
   "env": {
-    "VIRTUAL_ENV": "${PWD}/.venv",
-    "PATH": "${PWD}/.venv/bin:$PATH"
+    "VIRTUAL_ENV": "${PWD}/.venv"
   },
   "hooks": {
     "PreToolUse": [

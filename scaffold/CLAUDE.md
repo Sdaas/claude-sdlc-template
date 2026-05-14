@@ -562,8 +562,7 @@ The pre_tool_use hook in `.claude/hooks/pre_tool_use.py` blocks bare
 If the hook blocks a command, fix the command using `uv run` and proceed.
 The hook is a reminder, not a failure.
 
-`.claude/settings.json` injects `VIRTUAL_ENV` and the venv `bin/` path
-into every shell as an additional fallback.
+`.claude/settings.json` injects `VIRTUAL_ENV` into every shell as an additional fallback.
 
 ---
 
