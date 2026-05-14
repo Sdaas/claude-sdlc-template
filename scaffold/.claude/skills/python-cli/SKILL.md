@@ -122,11 +122,52 @@ set -euo pipefail
 ### Quality Standards
 
 - All scripts must pass `shellcheck` with zero warnings.
+- All scripts must pass `shfmt -d` with zero diff (formatting enforced).
 - Inline `shellcheck` suppressions require a comment explaining why.
 - Scripts are single-responsibility — one script, one job.
 - Scripts must be callable from both CI and local dev without environment-specific changes.
 - All variables are quoted: `"${variable}"` not `$variable`.
+- Use `$(...)` for command substitution — never backticks.
 - Functions are preferred over repeated code blocks.
+- No function exceeds 40 lines. Split at 30-40 lines as a forcing function.
+- All function-local variables declared with `local`.
+- Scripts must be idempotent — safe to run multiple times without side effects.
+
+### Dependency Checks
+
+Every script that relies on external tools must verify they exist before doing any
+work. Run a preflight block near the top:
+
+```bash
+for cmd in jq curl git; do
+    command -v "${cmd}" &>/dev/null || { echo "Required: ${cmd}" >&2; exit 1; }
+done
+```
+
+Fail fast with a clear message — never let a missing tool cause a confusing mid-script error.
+
+### Temporary File Handling
+
+Use `mktemp` for temporary files and clean up with `trap`:
+
+```bash
+TMP=$(mktemp)
+trap 'rm -f "${TMP}"' EXIT
+```
+
+Never use predictable filenames like `/tmp/myscript.tmp`.
+
+### Arguments and Output
+
+- Every script supports `-h` / `--help` (usage message + exit 0).
+- Every script supports `--verbose` (off by default).
+- Do not use BLUE as an output colour. It is reserved for Claude Code's own UI
+  and causes visual confusion when scripts are run inside a Claude session.
+- Always exit with a non-zero code on failure. `set -e` handles most cases, but
+  explicit `exit 1` in error paths is clearer and required where `set -e` would
+  not fire (e.g. after a conditional that detected an error).
+- When invoking other scripts or tools, always check the exit status and surface
+  any failure immediately.
 
 ### Testing
 

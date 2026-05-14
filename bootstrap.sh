@@ -336,8 +336,11 @@ fi
 if [[ -n "${ARG_GITHUB_REMOTE}" ]]; then
     GITHUB_REMOTE="${ARG_GITHUB_REMOTE}"
 elif [[ "${NON_INTERACTIVE}" == "false" ]]; then
-    DEFAULT_REMOTE="https://github.com/${ORG_NAME}/${PROJECT_NAME}.git"
-    ask "GitHub remote URL (leave blank to skip)" "${DEFAULT_REMOTE}" GITHUB_REMOTE
+    GITHUB_REMOTE=""
+    if confirm "Add a GitHub remote?" "n"; then
+        DEFAULT_REMOTE="https://github.com/${ORG_NAME}/${PROJECT_NAME}.git"
+        ask "GitHub remote URL" "${DEFAULT_REMOTE}" GITHUB_REMOTE
+    fi
 else
     GITHUB_REMOTE=""
 fi
@@ -371,8 +374,18 @@ fi
 
 log_step "Step 1/15 — Checking prerequisites"
 FAILED=false
-command -v uv  &>/dev/null && log_success "uv: $(uv --version)"  || { log_error "uv not found. Install: curl -LsSf https://astral.sh/uv/install.sh | sh"; FAILED=true; }
-command -v git &>/dev/null && log_success "git: $(git --version)" || { log_error "git not found."; FAILED=true; }
+if uv --version &>/dev/null; then
+    log_success "uv: $(uv --version)"
+else
+    log_error "uv not found or not executable. Install: curl -LsSf https://astral.sh/uv/install.sh | sh"
+    FAILED=true
+fi
+if git --version &>/dev/null; then
+    log_success "git: $(git --version)"
+else
+    log_error "git not found or not executable."
+    FAILED=true
+fi
 [[ "${FAILED}" == "true" ]] && { log_error "Fix prerequisites and re-run."; exit 1; }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -605,8 +618,14 @@ if [[ -n "${GITHUB_REMOTE}" ]]; then
     git remote add origin "${GITHUB_REMOTE}"
     log_success "Remote added: ${GITHUB_REMOTE}"
     if [[ "${NON_INTERACTIVE}" == "false" ]] && confirm "Push initial commit to origin/main now?" "n"; then
-        git push -u origin main
-        log_success "Pushed to origin/main"
+        if git ls-remote "${GITHUB_REMOTE}" &>/dev/null; then
+            git push -u origin main
+            log_success "Pushed to origin/main"
+        else
+            log_error "Cannot reach ${GITHUB_REMOTE}"
+            log_error "Verify the repo exists on GitHub and you have push access, then run:"
+            log_dim "  git push -u origin main"
+        fi
     else
         log_dim "Run when ready: git push -u origin main"
     fi

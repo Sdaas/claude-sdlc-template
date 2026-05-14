@@ -322,14 +322,20 @@ Claude runs these tools as part of security review and reports their output:
 # Check Python dependencies for known vulnerabilities
 uv run pip-audit
 
-# Run ruff with security rules (S ruleset — bandit)
+# Run ruff security rules (S ruleset — equivalent to bandit)
 uv run ruff check --select S .
+
+# If bandit is installed directly, run it as well for defence in depth
+# bandit -r src/ -f txt -ll   # -ll = medium and high severity only
 
 # Check for secrets accidentally staged (if pre-commit not already run)
 git diff --staged | grep -iE "(password|secret|token|api_key|private_key)" || true
 
-# Check shell scripts
-shellcheck scripts/*.sh
+# Check shell scripts (static analysis)
+shellcheck scripts/*.sh hooks/*.sh 2>/dev/null || true
+
+# Check shell script formatting
+shfmt -d scripts/ hooks/ 2>/dev/null || true
 
 # Lint SQL
 sqlfluff lint sql/ --dialect sqlite  # adjust dialect as needed

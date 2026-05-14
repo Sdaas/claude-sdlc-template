@@ -136,6 +136,21 @@ Example: `/code-review` is the command (the trigger). The `code-review` skill
 is the knowledge (what to look for, how to conduct the dialogue, what
 constitutes a pass). The command loads the skill and follows it.
 
+### Why `/skills` shows some entries twice
+
+Running `/skills` in Claude Code lists every registered skill and command. Skills
+that have a corresponding slash command appear **twice** — once for the skill file
+(the knowledge, shown with a higher token count) and once for the command file (the
+trigger, shown with a lower token count). This is expected behaviour, not a bug.
+
+For example, `code-review` appears as:
+- `code-review · project · ~63 tok` — the `skills/code-review/SKILL.md` knowledge package
+- `code-review · project · ~17 tok` — the `commands/code-review.md` trigger file
+
+The same pattern applies to `standup`, `retrospective`, `release`, and any other
+skill that has a paired slash command. Skills without a slash command (e.g.,
+`python-cli`, `tdd`, `security`) appear only once.
+
 ---
 
 ## A Typical Development Cycle

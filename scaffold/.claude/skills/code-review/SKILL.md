@@ -142,10 +142,20 @@ path = Path.home() / ".config" / "app"
 - Every script starts with `#!/usr/bin/env bash`
 - Every script has `set -euo pipefail` immediately after shebang
 - All variables are quoted: `"${variable}"` not `$variable`
+- `$(...)` used for command substitution — no backticks
 - No hardcoded paths — use variables or detect at runtime
 - `shellcheck` passes with zero warnings
+- `shfmt -d` produces no diff (formatting consistent)
 - Functions are used for repeated logic
+- No function exceeds 40 lines
+- All function-local variables declared with `local`
 - Scripts are single-responsibility
+- Scripts are idempotent — safe to re-run without side effects
+- External dependencies checked at startup before any work begins
+- `-h` / `--help` and `--verbose` flags present
+- No BLUE colour used in output (reserved for Claude Code UI)
+- Non-zero exit code on every failure path
+- Exit status of all invoked scripts and tools is checked
 
 ### 2.6 SQL Checks
 
@@ -170,6 +180,19 @@ path = Path.home() / ".config" / "app"
 - README updated if user-facing behaviour changed
 - CONTRIBUTING.md updated if developer workflow changed
 - Inline comments explain why, not what
+
+**Markdown quality** — applies to every `.md` file created or modified:
+
+- Internal links use relative paths (`../docs/setup.md`), not absolute URLs
+- All files and paths referenced in markdown actually exist in the repo
+- Anchor links (`[#section]`) match the actual generated heading IDs
+- Files longer than two screens have a table of contents that matches the actual headings
+- All code blocks specify a language tag for syntax highlighting
+- Terminal commands exclude the shell prompt so they are copy-paste friendly
+- Command output is visually separated from commands (e.g. a blank line or comment)
+- Headers follow strict hierarchy — no skipped levels (`#` → `##` → `###`)
+- Instruction documents list prerequisites at the top
+- No spelling errors, no broken markdown syntax
 
 ---
 
@@ -308,7 +331,10 @@ Non-blocking findings: {N} resolved, {N} deferred
 Coverage after change: {N}% ({direction} from baseline)
 Mypy: PASS | FAIL
 Ruff: PASS | FAIL
+Ruff --select S (bandit): PASS | FAIL
+pip-audit: PASS | FAIL
 Shellcheck: PASS | FAIL (if shell scripts changed)
+Shfmt: PASS | FAIL (if shell scripts changed)
 Sqlfluff: PASS | FAIL (if SQL changed)
 
 Review passed: YES | NO
@@ -341,7 +367,9 @@ Additional rules specific to code review:
 A code review passes when:
 
 - All BLOCKING findings are resolved
-- All linter checks pass: ruff, mypy, shellcheck (if applicable), sqlfluff (if applicable)
+- All linter checks pass: ruff, mypy, shellcheck (if applicable), shfmt (if applicable), sqlfluff (if applicable)
+- `ruff check --select S` passes (bandit security rules — zero findings)
+- `pip-audit` passes (no known vulnerabilities in dependencies)
 - Coverage is at or above threshold
 - Security review has no unresolved BLOCKING findings
 - Developer has given explicit sign-off
