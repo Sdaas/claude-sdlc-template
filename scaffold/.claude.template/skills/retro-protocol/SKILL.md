@@ -1,11 +1,9 @@
 ---
-name: retrospective
+name: retro-protocol
 description: >
-  Load this skill at the end of every session, or when /retrospective is
-  invoked manually. Defines what Claude analyses, how it structures findings,
-  and how the retrospective artifact is persisted. Triggered automatically
-  when a feature or bugfix reaches COMMIT gate, or when the developer signals
-  the session is ending. Uses Sonnet 4.6.
+  Load this skill when conducting a session retrospective. Defines what Claude
+  analyses, how it structures findings, and how the retrospective artifact is
+  persisted. Loaded by /retrospective command and /exit command. Uses Sonnet 4.6.
 model: claude-sonnet-4-6
 ---
 

@@ -16,8 +16,8 @@ session state, and then signal when it is safe to close."
 
 ### Step 2 — Run Retrospective
 
-Load the `retrospective` skill and run a full retrospective on this session.
-Follow the retrospective skill exactly:
+Load the `retro-protocol` skill and run a full retrospective on this session.
+Follow the retro-protocol skill exactly:
 - Analyse all four dimensions (Process, Cost, Effectiveness, Communication)
 - Present findings to the developer
 - Wait for developer to review and add notes to Developer Notes section

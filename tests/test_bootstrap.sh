@@ -351,6 +351,143 @@ test_missing_required_arg() {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Test: all command files exist and are non-empty
+# ─────────────────────────────────────────────────────────────────────────────
+
+test_claude_commands() {
+    echo -e "\n${BOLD}test_claude_commands${RESET}"
+    local dest
+    dest="$(mktemp -d /tmp/bootstrap_test_XXXXXX)"
+    trap "rm -rf '${dest}'" RETURN
+
+    run_bootstrap "${dest}" >/dev/null 2>&1 || { fail "bootstrap exited non-zero"; return; }
+
+    local commands=(
+        release.md code-review.md design-review.md feature.md bugfix.md
+        trivial.md plan-review.md exit.md monitor.md retrospective.md
+    )
+    for cmd in "${commands[@]}"; do
+        assert_true "commands/${cmd} exists"     test -f "${dest}/.claude/commands/${cmd}"
+        assert_true "commands/${cmd} non-empty"  test -s "${dest}/.claude/commands/${cmd}"
+    done
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: all skill directories and SKILL.md files exist and are non-empty
+# ─────────────────────────────────────────────────────────────────────────────
+
+test_claude_skills() {
+    echo -e "\n${BOLD}test_claude_skills${RESET}"
+    local dest
+    dest="$(mktemp -d /tmp/bootstrap_test_XXXXXX)"
+    trap "rm -rf '${dest}'" RETURN
+
+    run_bootstrap "${dest}" >/dev/null 2>&1 || { fail "bootstrap exited non-zero"; return; }
+
+    local skills=(
+        design-doc git-workflow github-actions homebrew python-cli
+        retro-protocol security standup tdd uv-packaging workflows
+    )
+    for skill in "${skills[@]}"; do
+        local skill_dir="${dest}/.claude/skills/${skill}"
+        assert_true "skills/${skill}/ directory exists"        test -d "${skill_dir}"
+        assert_true "skills/${skill}/SKILL.md exists"         test -f "${skill_dir}/SKILL.md"
+        assert_true "skills/${skill}/SKILL.md non-empty"      test -s "${skill_dir}/SKILL.md"
+        assert_file_contains "skills/${skill}/SKILL.md has name:" "${skill_dir}/SKILL.md" "name:"
+    done
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: pre_tool_use.py hook exists and is executable
+# ─────────────────────────────────────────────────────────────────────────────
+
+test_claude_hooks() {
+    echo -e "\n${BOLD}test_claude_hooks${RESET}"
+    local dest
+    dest="$(mktemp -d /tmp/bootstrap_test_XXXXXX)"
+    trap "rm -rf '${dest}'" RETURN
+
+    run_bootstrap "${dest}" >/dev/null 2>&1 || { fail "bootstrap exited non-zero"; return; }
+
+    assert_true "hooks/pre_tool_use.py exists"      test -f "${dest}/.claude/hooks/pre_tool_use.py"
+    assert_true "hooks/pre_tool_use.py executable"  test -x "${dest}/.claude/hooks/pre_tool_use.py"
+    assert_true "hooks/pre_tool_use.py non-empty"   test -s "${dest}/.claude/hooks/pre_tool_use.py"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: skill references in command files point to skills that exist
+# ─────────────────────────────────────────────────────────────────────────────
+
+test_claude_cross_references() {
+    echo -e "\n${BOLD}test_claude_cross_references${RESET}"
+    local dest
+    dest="$(mktemp -d /tmp/bootstrap_test_XXXXXX)"
+    trap "rm -rf '${dest}'" RETURN
+
+    run_bootstrap "${dest}" >/dev/null 2>&1 || { fail "bootstrap exited non-zero"; return; }
+
+    # pairs: "command_file:skill_name"
+    local pairs=(
+        "feature.md:workflows"
+        "bugfix.md:workflows"
+        "trivial.md:workflows"
+        "code-review.md:security"
+        "design-review.md:design-doc"
+        "plan-review.md:workflows"
+        "retrospective.md:retro-protocol"
+        "exit.md:retro-protocol"
+        "monitor.md:github-actions"
+    )
+    for pair in "${pairs[@]}"; do
+        local cmd="${pair%%:*}"
+        local skill="${pair##*:}"
+        if grep -q "${skill}" "${dest}/.claude/commands/${cmd}" 2>/dev/null; then
+            assert_true "${cmd} → skills/${skill}/SKILL.md exists" \
+                test -f "${dest}/.claude/skills/${skill}/SKILL.md"
+        else
+            fail "${cmd} does not reference skill '${skill}'"
+        fi
+    done
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: CLAUDE.md is non-empty and has key sections
+# ─────────────────────────────────────────────────────────────────────────────
+
+test_claude_md_content() {
+    echo -e "\n${BOLD}test_claude_md_content${RESET}"
+    local dest
+    dest="$(mktemp -d /tmp/bootstrap_test_XXXXXX)"
+    trap "rm -rf '${dest}'" RETURN
+
+    run_bootstrap "${dest}" >/dev/null 2>&1 || { fail "bootstrap exited non-zero"; return; }
+
+    assert_true        "CLAUDE.md non-empty"                    test -s "${dest}/CLAUDE.md"
+    assert_file_contains "CLAUDE.md has Workflow Triggers section" "${dest}/CLAUDE.md" "Workflow Triggers"
+    assert_file_contains "CLAUDE.md references /feature command"   "${dest}/CLAUDE.md" "/feature"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test: settings.json is non-empty and valid JSON
+# ─────────────────────────────────────────────────────────────────────────────
+
+test_settings_json() {
+    echo -e "\n${BOLD}test_settings_json${RESET}"
+    local dest
+    dest="$(mktemp -d /tmp/bootstrap_test_XXXXXX)"
+    trap "rm -rf '${dest}'" RETURN
+
+    run_bootstrap "${dest}" >/dev/null 2>&1 || { fail "bootstrap exited non-zero"; return; }
+
+    assert_true "settings.json non-empty" test -s "${dest}/.claude/settings.json"
+    if command -v jq &>/dev/null; then
+        assert_true "settings.json valid JSON" jq empty "${dest}/.claude/settings.json"
+    else
+        skip "settings.json valid JSON (jq not available)"
+    fi
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Run all tests
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -370,6 +507,12 @@ test_force_flag
 test_unit_tests_pass
 test_cli_runnable
 test_missing_required_arg
+test_claude_commands
+test_claude_skills
+test_claude_hooks
+test_claude_cross_references
+test_claude_md_content
+test_settings_json
 
 echo ""
 echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"

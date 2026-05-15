@@ -1,24 +1,11 @@
----
-name: release
-description: >
-  Load this skill for any task involving the release process, version bumping,
-  changelog generation, git tagging, GitHub release creation, or Homebrew
-  formula updates. Triggered by the /release command. Claude acts as co-pilot
-  while release.sh drives the mechanical execution.
----
+# /release — Release Process
 
-# Release Process Conventions
-
-This skill defines the complete release process for
-this project. The release is driven by `scripts/release.sh`, which
-runs interactively. Claude acts as co-pilot: explaining each step, interpreting
-output, and flagging problems before they become incidents.
-
-Uses Sonnet 4.6.
+Triggered by: `/release` (manual only — never automatic)
+Model: Sonnet 4.6 (announce and wait for confirmation)
 
 ---
 
-## 1. Release Philosophy
+## Release Philosophy
 
 - Releases are always triggered by a human — never autonomously by Claude or CI
 - Every release starts from a clean, passing `main` branch
@@ -29,7 +16,60 @@ Uses Sonnet 4.6.
 
 ---
 
-## 2. Pre-Release Checklist
+## Immediate Actions
+
+1. Announce model:
+
+```
+Starting Release Process (Sonnet 4.6).
+Please switch to Sonnet 4.6 before we proceed.
+Confirm when ready.
+```
+
+2. Present the Pre-Release Checklist below. Go through each item with the
+   developer. Every item must be confirmed before proceeding.
+
+3. Present version bump options and recommendation based on commits since
+   last release. (See Semantic Versioning Rules below.) Wait for developer
+   to select.
+
+4. Confirm:
+
+```
+Release version: {NEW_VERSION}
+This will:
+  - Run the full test suite
+  - Bump version in pyproject.toml
+  - Update CHANGELOG.md
+  - Create git tag v{NEW_VERSION}
+  - Trigger GitHub Actions release workflow
+  - Update Homebrew formula in tap repo
+  - Verify installation via Homebrew
+
+Shall I hand off to release.sh? [y/N]
+```
+
+5. On developer confirmation, instruct:
+
+```
+Run: ./scripts/release.sh
+
+I will monitor each step and flag anything unexpected.
+Tell me the output of each step as it completes.
+```
+
+6. Co-pilot through each of the 17 steps in `release.sh`:
+   - Explain what each step does before it runs
+   - Interpret the output after it completes
+   - Flag anything unexpected before the developer confirms the next step
+   - If any step fails, diagnose and recommend remediation before proceeding
+
+7. After Step 17 (post-release summary), confirm release is complete
+   and trigger retrospective.
+
+---
+
+## Pre-Release Checklist
 
 Before invoking `release.sh`, the developer and Claude verify:
 
@@ -37,16 +77,13 @@ Before invoking `release.sh`, the developer and Claude verify:
 - [ ] `main` CI is green — all checks passing
 - [ ] No unresolved issues tagged for this milestone
 - [ ] `CHANGELOG.md` entries are accurate and complete
-- [ ] Version number follows semantic versioning rules (see Section 3)
+- [ ] Version number follows semantic versioning rules (see below)
 - [ ] Developer has push access to both the project repo and the tap repo
 - [ ] Homebrew tap repo is accessible locally (see DEVELOPER_GUIDE.md)
 
-Claude presents this checklist interactively before the developer invokes
-the script. Developer confirms each item.
-
 ---
 
-## 3. Semantic Versioning Rules
+## Semantic Versioning Rules
 
 Format: `MAJOR.MINOR.PATCH`
 
@@ -65,12 +102,12 @@ Rules:
 - MAJOR bump resets MINOR and PATCH to zero: `1.4.3` → `2.0.0`
 - MINOR bump resets PATCH to zero: `1.4.3` → `1.5.0`
 
-Claude presents the version bump options and recommendation based on the
-changes in this release. Developer makes the final decision.
+Present the version bump options and recommendation based on the changes in
+this release. Developer makes the final decision.
 
 ---
 
-## 4. Release Sequence
+## Release Sequence
 
 This is the exact sequence `release.sh` follows. Every step pauses for
 developer confirmation before executing.
@@ -97,7 +134,7 @@ Step 17: Post-release summary
 
 ---
 
-## 5. Step-by-Step Specification
+## Step-by-Step Specification
 
 ### Step 1 — Verify Prerequisites
 
@@ -354,7 +391,7 @@ Next steps:
 
 ---
 
-## 6. Interruption and Recovery
+## Interruption and Recovery
 
 If `release.sh` is interrupted at any step, it can be safely re-run.
 The script detects its current state and resumes from the last incomplete step.
@@ -368,7 +405,7 @@ continue, abort, or reset.
 
 ---
 
-## 7. CHANGELOG.md Format
+## CHANGELOG.md Format
 
 ```markdown
 # Changelog
@@ -401,21 +438,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## 8. What Claude Must Do With This Skill
+## Rules
 
-When co-piloting a release:
-
-- Always use Sonnet 4.6
-- Always present the pre-release checklist and get confirmation on every item
-  before the developer invokes `release.sh`
-- Always present and explain the version bump options — never choose silently
+- Never trigger a release autonomously — always require developer to
+  invoke release.sh manually
+- Always present the pre-release checklist before anything else
+- Always co-pilot interactively — explain each step, interpret output
+- Always present and explain version bump options — never choose silently
 - Watch the output of every step and flag anything unexpected before the
   developer confirms the next step
 - If any step fails, explain what failed, why it likely failed, and the
-  recommended remediation before asking the developer how to proceed
+  recommended remediation before asking how to proceed
 - Never encourage skipping a step — every step exists for a reason
-- If brew audit fails, do not proceed — help the developer fix the formula first
-- If the Homebrew installation verification fails, the release is not complete —
-  flag this clearly and help diagnose
-- Record the release in the session — the retrospective should note
-  the release version and any issues encountered
+- If brew audit fails (Step 14), do not proceed — help fix the formula
+- If Homebrew installation verification fails (Step 16), the release is
+  not complete — diagnose before declaring done
+- Record the release version in the session retrospective

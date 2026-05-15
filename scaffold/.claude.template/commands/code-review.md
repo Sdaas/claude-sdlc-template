@@ -1,23 +1,71 @@
----
-name: code-review
-description: >
-  Load this skill for any task involving code review, reviewing a pull request,
-  evaluating code quality, or conducting the code review gate in the STANDARD
-  workflow. Triggered
-  automatically after CODE gate completes, via /code-review command.
----
+# /code-review — Code Review and Security Review Dialogue
 
-# Code Review Conventions
+Triggered by: workflows skill Steps 8-9, or `/code-review` (manual)
+Model: Sonnet 4.6 (announce and wait for confirmation)
 
-This skill defines what Claude looks for during code review, how the review
-dialogue is conducted, and what constitutes a passing review. Code review is
-mandatory for every STANDARD change. It always includes a Security Review section.
-
-Uses Sonnet 4.6.
+Code review and security review run in the same session — security review
+is the final section, not a separate step. Load the `security` skill for
+the security review section.
 
 ---
 
-## 1. When Code Review Runs
+## Immediate Actions
+
+1. Announce model:
+
+```
+Starting Code Review + Security Review (Sonnet 4.6).
+Please switch to Sonnet 4.6 before we proceed.
+Confirm when ready.
+```
+
+2. Identify changed files:
+
+```bash
+git diff main...HEAD --name-only
+```
+
+   If no active feature branch is obvious, ask: "Which branch or
+   commit range should I review?"
+
+3. Read every changed file in full before presenting any findings.
+
+4. Run all tool checks and collect output:
+   - `uv run ruff check .`
+   - `uv run ruff format --check .`
+   - `uv run mypy src/`
+   - `shellcheck scripts/*.sh` (if shell files changed)
+   - `uv run sqlfluff lint sql/` (if SQL files changed)
+   - `uv run pip-audit`
+   - `uv run ruff check --select S .` (security ruleset)
+
+5. Present ALL code review findings upfront — numbered, BLOCKING /
+   NON-BLOCKING. Include tool check failures as findings.
+
+6. Address code review findings one at a time, BLOCKING first.
+
+7. When all code review findings resolved, transition to security review:
+
+```
+Code review complete. Starting Security Review.
+```
+
+8. Apply the full security checklist from the `security` skill.
+   Present ALL security findings upfront.
+
+9. Address security findings one at a time, CRITICAL/HIGH first.
+
+10. Write full dialogue to `docs/decisions/{slug}/CODE_REVIEW.md`
+    including the Security Review section.
+
+11. When all BLOCKING findings (code + security) resolved:
+    - Update CODE_REVIEW.md with final status
+    - Commit CODE_REVIEW.md
+    - State: "Code review and security review complete. Ready for COMMIT gate."
+
+---
+
+## When Code Review Runs
 
 Code review runs after the CODE gate completes — all tests are green, coverage
 has not regressed, and the developer signals the implementation is ready.
@@ -38,9 +86,9 @@ Code review does NOT cover:
 
 ---
 
-## 2. What Claude Reviews For
+## What Claude Reviews For
 
-### 2.1 Correctness
+### Correctness
 
 - Does the implementation match the approved DESIGN.md?
 - Does it solve the stated problem without introducing new ones?
@@ -48,7 +96,7 @@ Code review does NOT cover:
 - Are all error paths handled explicitly?
 - Are return types and function signatures consistent with the design?
 
-### 2.2 Test Quality
+### Test Quality
 
 - Does every changed source file have corresponding test coverage?
 - Are test names descriptive — do they read as sentences?
@@ -59,7 +107,7 @@ Code review does NOT cover:
 - Do bats tests have setup() and teardown()?
 - Is coverage at or above the threshold after this change?
 
-### 2.3 Code Quality
+### Code Quality
 
 - Is the code as simple as it could be for the problem it solves?
 - Are there abstractions that aren't justified by the requirements?
@@ -72,7 +120,7 @@ Code review does NOT cover:
 - Are type annotations present on all functions?
 - Does mypy pass with strict mode on this code?
 
-### 2.4 Python-Specific Checks
+### Python-Specific Checks
 
 - No mutable default arguments:
 
@@ -137,7 +185,7 @@ from pathlib import Path
 path = Path.home() / ".config" / "app"
 ```
 
-### 2.5 Shell Script Checks
+### Shell Script Checks
 
 - Every script starts with `#!/usr/bin/env bash`
 - Every script has `set -euo pipefail` immediately after shebang
@@ -157,7 +205,7 @@ path = Path.home() / ".config" / "app"
 - Non-zero exit code on every failure path
 - Exit status of all invoked scripts and tools is checked
 
-### 2.6 SQL Checks
+### SQL Checks
 
 - No string interpolation in SQL — parameterised queries only
 - Migration files follow zero-padded sequential naming
@@ -165,7 +213,7 @@ path = Path.home() / ".config" / "app"
 - All new SQL files pass `sqlfluff` lint
 - Query files are named for their intent
 
-### 2.7 Commit Quality
+### Commit Quality
 
 - Commits are atomic — one concern per commit
 - Commit messages follow Conventional Commits format
@@ -173,7 +221,7 @@ path = Path.home() / ".config" / "app"
 - No commented-out code committed
 - No TODO comments committed without a linked issue number
 
-### 2.8 Documentation
+### Documentation
 
 - Public functions have docstrings
 - CLI commands have help text on every argument and option
@@ -203,7 +251,7 @@ Documentation update checks are **BLOCKING** if any of the following are true:
 
 ---
 
-## 3. Severity Definitions
+## Severity Definitions
 
 Every finding is classified as BLOCKING or NON-BLOCKING before the dialogue begins.
 
@@ -234,7 +282,7 @@ Every finding is classified as BLOCKING or NON-BLOCKING before the dialogue begi
 
 ---
 
-## 4. Review Output Format
+## Review Output Format
 
 ```markdown
 ## Code Review — {Feature or Bug Title}
@@ -300,7 +348,7 @@ with the same BLOCKING / NON-BLOCKING classification.}
 
 ### CI Remediation (appended after push if CI fails)
 
-```markdown
+\`\`\`markdown
 ### CI Remediation
 
 **Branch:** {branch-name}
@@ -330,7 +378,7 @@ with the same BLOCKING / NON-BLOCKING classification.}
 Total attempts: {N} of 3 maximum
 Resolved: YES | NO
 Resolution: {description or ESCALATED TO DEVELOPER}
-```
+\`\`\`
 
 Total findings: {N} blocking, {N} non-blocking
 Blocking findings resolved: YES | NO
@@ -351,25 +399,20 @@ Date approved: {YYYY-MM-DD}
 
 ---
 
-## 5. Review Dialogue Protocol
+## Review Dialogue Protocol
 
-Follows the standard protocol from CLAUDE.md Section 8.
-
-Additional rules specific to code review:
-
-- Claude reads every changed file before presenting any findings — no incremental
+- Read every changed file before presenting any findings — no incremental
   findings that appear mid-dialogue because Claude hadn't read the whole diff yet
-- Claude presents the complete findings list upfront, then addresses one at a time
-- When a finding is resolved, Claude confirms the fix before moving to the next
-- Claude runs the tool checks (mypy, ruff, shellcheck, sqlfluff) and reports
-  their output as part of the review — does not rely on the developer's claim
-  that they pass
+- Present the complete findings list upfront, then address one at a time
+- When a finding is resolved, confirm the fix before moving to the next
+- Run the tool checks (mypy, ruff, shellcheck, sqlfluff) and report their
+  output — do not rely on the developer's claim that they pass
 - Security review findings are presented after all code findings are resolved —
   security is a separate dialogue within the same review session
 
 ---
 
-## 6. Passing Criteria
+## Passing Criteria
 
 A code review passes when:
 
@@ -384,26 +427,21 @@ A code review passes when:
 
 A code review does not pass by silence or by the developer saying "looks fine."
 Explicit sign-off is required. If the developer disagrees with a BLOCKING finding,
-the disagreement is recorded in the dialogue and escalated — Claude does not
-silently drop a blocking finding.
+the disagreement is recorded in the dialogue and escalated — never silently drop
+a blocking finding.
 
 ---
 
-## 7. What Claude Must Do With This Skill
+## Rules
 
-When conducting a code review:
-
-- Always use Sonnet 4.6
-- Always read every changed file before presenting any findings
-- Always present the complete findings list before addressing any individual finding
-- Always run tool checks and report their output — never rely on developer assertions
-- Always classify every finding as BLOCKING or NON-BLOCKING before the dialogue
-- Never drop a BLOCKING finding because the developer pushes back —
-  record the disagreement and flag it
-- Never pass a review with unresolved BLOCKING findings
-- Always conduct security review as part of code review — never skip it
-- Always commit CODE_REVIEW.md alongside the implementation files
+- Read every changed file before presenting any findings — no surprises
+- Run all tool checks — never rely on developer's assertion they pass
+- Never pass review with unresolved BLOCKING or CRITICAL findings
+- If developer pushes back on a BLOCKING finding, record the disagreement
+  — never silently drop a blocking finding
+- Security review always runs — even if code review found no issues
 - Flag any deviation from python-cli conventions as at minimum NON-BLOCKING
 - Flag missing docstrings on public functions as NON-BLOCKING
 - Flag missing docstrings on CLI arguments and options as BLOCKING —
   users depend on help text
+- CI remediation log appended here if CI fails after push

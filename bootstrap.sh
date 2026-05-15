@@ -418,7 +418,7 @@ fi
 
 log_step "Step 3/15 — Copying scaffold to destination"
 
-# cp -r scaffold/. copies everything including hidden dirs (.claude, .github)
+# cp -r scaffold/. copies everything including hidden dirs (.claude.template, .github)
 cp -r "${SCAFFOLD_DIR}/." "${DEST_DIR}/"
 log_success "Scaffold copied to ${DEST_DIR}"
 
@@ -443,6 +443,16 @@ fi
 if [[ -f "gitignore.template" ]]; then
     mv "gitignore.template" ".gitignore"
     log_success "gitignore.template → .gitignore"
+fi
+
+if [[ -f "CLAUDE.md.template" ]]; then
+    mv "CLAUDE.md.template" "CLAUDE.md"
+    log_success "CLAUDE.md.template → CLAUDE.md"
+fi
+
+if [[ -d ".claude.template" ]]; then
+    mv ".claude.template" ".claude"
+    log_success ".claude.template/ → .claude/"
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -549,8 +559,7 @@ mkdir -p \
     tests/unit tests/integration tests/shell \
     docs/decisions docs/retrospectives \
     sql/migrations sql/queries sql/seeds \
-    scripts \
-    .claude/hooks
+    scripts
 
 touch \
     "src/${PACKAGE_NAME}/commands/__init__.py" \

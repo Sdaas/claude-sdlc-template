@@ -76,6 +76,21 @@ require constant clarification.
 
 ---
 
+## Commands and Skills — How the `.claude/` Directory Works
+
+**Commands** (`claude-setup/commands/`) are user-facing entry points. The developer
+types `/command-name` to invoke them. Each command is a self-contained procedure.
+
+**Skills** (`claude-setup/skills/`) are knowledge modules loaded internally by Claude
+when a command needs specialised reference material. The developer never invokes a
+skill directly — only commands are user-facing.
+
+Skills exist as separate files only when they are shared across multiple commands.
+When a skill is only ever used by a single command, its content lives inside that
+command file directly.
+
+---
+
 ## Section 2 — Workflow Triggers
 
 ### Canonical Triggers (Preferred)
@@ -358,7 +373,7 @@ Artifacts are committed in the same PR or commit as the code they describe.
   - GitHub Actions release workflow trigger
 - Claude drives the script interactively — presenting each step, getting confirmation,
   then executing.
-- The release skill (`skills/release/`) contains the full sequence specification.
+- The `/release` command contains the full sequence specification.
 
 ---
 

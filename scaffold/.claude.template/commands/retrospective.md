@@ -3,7 +3,7 @@
 Triggered by: `/exit` sequence (automatic) or `/retrospective` (manual)
 Model: Sonnet 4.6
 
-Load the `retrospective` skill and follow it exactly.
+Load the `retro-protocol` skill and follow it exactly.
 
 ## Immediate Actions
 
@@ -26,7 +26,7 @@ Reading session transcript and recent artifacts...
 
 4. Write the retrospective artifact to:
    `docs/retrospectives/{YYYY-MM-DD}-{slug}.md`
-   following the format in the `retrospective` skill exactly.
+   following the format in the `retro-protocol` skill exactly.
 
 5. Present the retrospective to the developer.
 
