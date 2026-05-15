@@ -14,7 +14,7 @@ Detected: Feature implementation
 Workflow: STANDARD — Feature Path
 Classification: STANDARD
 
-Starting Gate 1: CLASSIFY (automatic)
+Starting Gate 1: CLASSIFY
 ```
 
 2. Classify the feature — state it in plain language, confirm it is
@@ -53,7 +53,4 @@ Gate 2: DESIGN
 
 - If the description is ambiguous, ask one clarifying question before
   starting — do not assume scope
-- If the feature touches SQL, load the `python-cli` skill SQL conventions
-- If the feature touches shell scripts, load the `python-cli` shell conventions
-- If the feature has Homebrew distribution implications, load the `homebrew` skill
 - Always complete the full gate sequence before marking the feature done

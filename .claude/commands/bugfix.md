@@ -14,7 +14,7 @@ Detected: Bug fix
 Workflow: STANDARD — Bug Fix Path
 Classification: STANDARD
 
-Starting Gate 1: CLASSIFY (automatic)
+Starting Gate 1: CLASSIFY
 ```
 
 2. Classify the bug — state the bug description in plain language,
@@ -58,6 +58,3 @@ Gate 2: REPRODUCE
   expected instead?" before starting
 - If the bug has security implications, flag immediately and ensure
   SECURITY REVIEW is thorough
-- If the bug is in a shell script, load the `python-cli` shell conventions
-  and use bats for the reproducing test
-- If the bug is in SQL, load the `python-cli` SQL conventions

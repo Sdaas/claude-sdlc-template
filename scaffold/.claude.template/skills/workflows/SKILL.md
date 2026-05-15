@@ -4,7 +4,7 @@ description: >
   Load this skill whenever /feature, /bugfix, or /trivial is invoked, or when
   Claude needs to determine the correct gate sequence for a task. Defines the
   exact step-by-step process for each workflow type. This is the process bible —
-  every gate, every artifact, every model, every confirmation required.
+  every gate, every artifact, every confirmation required.
 ---
 
 # Workflow Definitions
@@ -21,7 +21,6 @@ No reordering.
 Each workflow is defined as a numbered sequence of steps. Each step specifies:
 
 - **Gate** — the name of the active gate
-- **Model** — which model to use (announce and wait for confirmation)
 - **Action** — exactly what Claude does
 - **Artifact** — what is written and where
 - **Confirmation** — what Claude waits for before proceeding
@@ -38,8 +37,7 @@ Before starting any workflow, Claude must:
 2. State the classification (TRIVIAL or STANDARD)
 3. For natural language triggers: wait for developer confirmation
 4. For slash command triggers: proceed after stating the workflow
-5. Announce the first gate and its model
-6. Wait for developer to confirm model is set
+5. Announce the first gate
 ```
 
 Example for `/feature "add --dry-run flag to deploy command"`:
@@ -47,10 +45,7 @@ Example for `/feature "add --dry-run flag to deploy command"`:
 ```
 Detected: Feature implementation
 Workflow: STANDARD — Feature Path
-First gate: DESIGN (Opus 4.6)
-
-Please switch to Opus 4.6 before we proceed.
-Confirm when ready.
+First gate: DESIGN
 ```
 
 ---
@@ -70,22 +65,29 @@ COMMIT → CI MONITOR → [MERGE → MONITOR MAIN] → DONE
 
 ### Step 1 — CLASSIFY
 
-**Model:** Haiku 4.5 (automatic)
 **Action:**
 - State the feature description in plain language
 - Confirm it is a STANDARD change
 - Confirm the artifact naming convention (slug or issue number)
 - State the artifact folder path: `docs/decisions/{slug}/`
 - Create the artifact folder
+- **Branch setup** (after slug confirmed):
+  - Run `git rev-parse --abbrev-ref HEAD`
+  - If on **main**: check `git status --short`. If dirty, warn about
+    uncommitted changes and wait for decision. Then:
+    `git checkout -b feature/{slug}` — if that fails (branch exists),
+    use `git checkout -b feature/{slug}-{YYYY-MM-DD}`.
+    Announce: "Created branch feature/{slug}."
+  - If on a **non-main branch**: warn "You're on branch {branch-name}.
+    Continue here, or create a new branch?" — wait for decision.
 
-**Confirmation:** Developer agrees with classification and naming
-**Exit condition:** Artifact folder exists, classification agreed
+**Confirmation:** Developer agrees with classification, naming, and branch
+**Exit condition:** Artifact folder exists, classification agreed, branch confirmed
 
 ---
 
 ### Step 2 — DESIGN
 
-**Model:** Opus 4.6 (announce and wait for confirmation)
 **Action:**
 - Read any related existing code, open artifacts, git log
 - Write `docs/decisions/{slug}/DESIGN.md` following the `design-doc` skill
@@ -101,7 +103,6 @@ COMMIT → CI MONITOR → [MERGE → MONITOR MAIN] → DONE
 
 ### Step 3 — DESIGN REVIEW
 
-**Model:** Opus 4.6 (same session, no switch needed)
 **Action:**
 - Read DESIGN.md in full before saying anything
 - Present ALL findings upfront — numbered, BLOCKING / NON-BLOCKING
@@ -120,7 +121,6 @@ DESIGN_REVIEW.md committed
 
 ### Step 4 — PLAN
 
-**Model:** Haiku 4.5 (announce and wait for confirmation)
 **Action:**
 - Write `docs/decisions/{slug}/PLAN.md` containing:
   - Claude's understanding of the task in plain language
@@ -142,7 +142,6 @@ DESIGN_REVIEW.md committed
 
 ### Step 5 — PLAN REVIEW
 
-**Model:** Haiku 4.5 (same session, no switch needed)
 **Action:**
 - Read PLAN.md in full
 - Present ALL findings upfront — numbered, BLOCKING / NON-BLOCKING
@@ -157,7 +156,6 @@ DESIGN_REVIEW.md committed
 
 ### Step 6 — TDD
 
-**Model:** Sonnet 4.6 (announce and wait for confirmation)
 **Action:**
 - State the three discipline check questions:
   1. What behaviour am I testing?
@@ -174,7 +172,6 @@ DESIGN_REVIEW.md committed
 
 ### Step 7 — CODE
 
-**Model:** Sonnet 4.6 (same session, no switch needed)
 **Action:**
 - Implement only enough code to make the failing test pass
 - Run the test — show the green output
@@ -193,7 +190,6 @@ full test suite shown green
 
 ### Step 8 — CODE REVIEW
 
-**Model:** Sonnet 4.6 (same session, no switch needed)
 **Action:**
 - Read every changed file before presenting any findings
 - Run tool checks: ruff, mypy, shellcheck (if applicable), sqlfluff (if applicable)
@@ -211,7 +207,6 @@ full test suite shown green
 
 ### Step 9 — SECURITY REVIEW
 
-**Model:** Sonnet 4.6 (same session, no switch needed)
 **Action:**
 - Run security tool checks: pip-audit, ruff --select S
 - Apply full security checklist from `security` skill
@@ -229,7 +224,6 @@ CODE_REVIEW.md complete and committed
 
 ### Step 10 — COMMIT
 
-**Model:** Haiku 4.5 (announce and wait for confirmation)
 **Action:**
 - Generate commit message(s) following Conventional Commits format
 - Present each commit message for developer approval
@@ -246,7 +240,6 @@ CODE_REVIEW.md complete and committed
 
 ### Step 11 — CI MONITOR
 
-**Model:** Sonnet 4.6 (same session)
 **Action:**
 - Push the feature branch
 - Get the run ID: `gh run list --branch {branch} --limit 1`
@@ -271,7 +264,6 @@ CODE_REVIEW.md complete and committed
 
 ### Step 12 — MERGE AND MONITOR MAIN
 
-**Model:** Sonnet 4.6 (same session)
 **Action:**
 - Confirm PR is open (or open one via `gh pr create`)
 - Confirm all CI checks are passing on the PR
@@ -292,7 +284,6 @@ CODE_REVIEW.md complete and committed
 
 ### Step 13 — DONE
 
-**Model:** Haiku 4.5 (automatic)
 **Action:**
 - Present completion summary:
 
@@ -344,20 +335,26 @@ Steps identical to Feature Workflow except for the following differences:
 
 ### Step 1 — CLASSIFY
 
-**Model:** Haiku 4.5 (automatic)
 **Action:**
 - State the bug description in plain language
 - Confirm it is a STANDARD change
 - Confirm artifact naming: `docs/decisions/{slug}/` or `docs/decisions/GH-{N}/`
 - Do NOT classify complexity yet — that happens after REPRODUCE
+- **Branch setup** (after slug confirmed):
+  - Run `git rev-parse --abbrev-ref HEAD`
+  - If on **main**: check `git status --short`. If dirty, warn about
+    uncommitted changes and wait for decision. Then:
+    `git checkout -b fix/{slug}` — if that fails (branch exists),
+    use `git checkout -b fix/{slug}-{YYYY-MM-DD}`.
+    Announce: "Created branch fix/{slug}."
+  - If on a **non-main branch**: warn "You're on branch {branch-name}.
+    Continue here, or create a new branch?" — wait for decision.
 
-**Exit condition:** Artifact folder created, naming agreed
+**Exit condition:** Artifact folder created, naming agreed, branch confirmed
 
 ---
 
 ### Step 2 — REPRODUCE (Bug Fix Only)
-
-**Model:** Sonnet 4.6 (announce and wait for confirmation)
 
 This step is unique to the bug fix workflow. It always runs before any
 design or planning work. This is the proof the bug exists.
@@ -378,7 +375,6 @@ correctly represents the bug
 
 ### Step 3 — CLASSIFY COMPLEXITY (Bug Fix Only)
 
-**Model:** Haiku 4.5 (automatic)
 **Action:**
 - Based on the failing test and codebase reading, classify the fix:
 
@@ -425,7 +421,6 @@ CLASSIFY (human agrees) → SURGICAL CHANGE → COMMIT → CI MONITOR → DONE
 
 ### Step 1 — CLASSIFY
 
-**Model:** Haiku 4.5 (automatic)
 **Action:**
 - State the change description
 - Confirm it qualifies as TRIVIAL:
@@ -440,7 +435,6 @@ CLASSIFY (human agrees) → SURGICAL CHANGE → COMMIT → CI MONITOR → DONE
 
 ### Step 2 — SURGICAL CHANGE
 
-**Model:** Haiku 4.5 (same session)
 **Action:**
 - Make only the stated change — nothing else
 - Show the diff before staging
@@ -455,7 +449,6 @@ the stated change
 
 ### Step 3 — COMMIT
 
-**Model:** Haiku 4.5 (same session)
 **Action:**
 - Generate commit message
 - Show staged diff
@@ -469,7 +462,6 @@ the stated change
 
 ### Step 4 — CI MONITOR
 
-**Model:** Haiku 4.5 (same session)
 **Action:**
 - Push change
 - Monitor CI run to completion
@@ -483,7 +475,6 @@ the stated change
 
 ### Step 5 — DONE
 
-**Model:** Haiku 4.5 (automatic)
 **Action:**
 - Confirm change is complete
 - No retrospective for trivial changes unless developer requests it
@@ -536,7 +527,6 @@ originally classified:
 - Load this skill on every `/feature`, `/bugfix`, and `/trivial` invocation
 - Follow the step sequence exactly — no improvisation, no reordering
 - State the active gate at all times — developer always knows where they are
-- Announce model at every gate transition and wait for confirmation
 - Never proceed past a gate without its exit condition being met
 - Never skip a confirmation step — every confirmation exists for a reason
 - If a step's exit condition cannot be met (e.g. tests will not pass),
@@ -545,3 +535,7 @@ originally classified:
 - Flag all scope creep immediately — never silently expand scope
 - The DONE step always triggers retrospective for Standard/Feature/Bugfix —
   never for Trivial unless requested
+- **Branch rules:**
+  - `/trivial` — may run on any branch including main; never creates a branch
+  - `/feature` and `/bugfix` — never proceed on main; create `feature/{slug}`
+    or `fix/{slug}` from main, or warn and wait if already on a non-main branch
