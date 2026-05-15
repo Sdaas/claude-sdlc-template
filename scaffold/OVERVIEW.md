@@ -49,7 +49,6 @@ structural, not discretionary.
 │   │   ├── feature.md           /feature "desc" — start a feature
 │   │   ├── bugfix.md            /bugfix "desc"  — start a bug fix
 │   │   ├── trivial.md           /trivial "desc" — make a trivial change
-│   │   ├── standup.md           /standup        — session startup summary
 │   │   ├── retrospective.md     /retrospective  — session analysis
 │   │   ├── design-review.md     /design-review  — review a design doc
 │   │   ├── plan-review.md       /plan-review    — review a plan
@@ -147,9 +146,9 @@ For example, `code-review` appears as:
 - `code-review · project · ~63 tok` — the `skills/code-review/SKILL.md` knowledge package
 - `code-review · project · ~17 tok` — the `commands/code-review.md` trigger file
 
-The same pattern applies to `standup`, `retrospective`, `release`, and any other
+The same pattern applies to `retrospective`, `release`, and any other
 skill that has a paired slash command. Skills without a slash command (e.g.,
-`python-cli`, `tdd`, `security`) appear only once.
+`python-cli`, `tdd`, `security`, `standup`) appear only once.
 
 ---
 

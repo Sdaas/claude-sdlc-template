@@ -588,3 +588,4 @@ These apply regardless of gate, path, or task type:
 - Always use /exit to end a session — never signal safe to close without completing the exit sequence.
 - Always require /retrospective at next standup if previous session ended without /exit.
 - Always start with `/standup` — no task is accepted before standup is acknowledged.
+- Always update documentation in the same commit as the structural change that makes it stale — never defer doc updates to a follow-up.
