@@ -13,7 +13,7 @@ description: >
 This skill defines the full security checklist, how Claude conducts the security
 review dialogue, and what constitutes a passing security review. Security review
 is mandatory for every STANDARD change. It runs as the final section of code
-review using Sonnet 4.6.
+review.
 
 ---
 
@@ -256,7 +256,7 @@ They follow the same dialogue format as code review findings.
 ```markdown
 ### Security Review
 
-**Reviewer:** Claude (Sonnet 4.6)
+**Reviewer:** Claude
 **Checklist version:** {date of this skill file}
 **Status:** IN REVIEW
 
@@ -347,7 +347,6 @@ sqlfluff lint sql/ --dialect sqlite  # adjust dialect as needed
 
 When conducting security review:
 
-- Always use Sonnet 4.6
 - Always run the full checklist — never skip sections because "this change is simple"
 - Always run pip-audit and report the output
 - Always run ruff with the S ruleset and report findings

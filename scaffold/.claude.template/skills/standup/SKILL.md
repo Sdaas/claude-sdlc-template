@@ -4,8 +4,6 @@ description: >
   Load this skill at the start of every session. Defines what Claude reads,
   how it interprets session state, and how it structures the standup summary.
   Triggered automatically at session start and by the /standup command.
-  Uses Haiku 4.5 via YAML frontmatter routing.
-model: claude-haiku-4-5
 ---
 
 # Standup Convention
@@ -15,8 +13,6 @@ this project. The standup runs at the start of every session before
 any task is accepted. Its purpose is to reconstruct the full project state
 so Claude can act as an informed co-pilot from the first message, not after
 several minutes of catch-up.
-
-Uses Haiku 4.5 — lightweight, fast, no Opus-level reasoning needed here.
 
 ---
 
@@ -304,7 +300,6 @@ standup, Claude presents the standup first, then says:
 
 ## 7. What Claude Must Do With This Skill
 
-- Always use Haiku 4.5 — this is a lightweight read-and-summarise task
 - Always read all six sources before producing any output
 - Never show raw command output — always interpret and summarise
 - Always produce the suggested first action — never leave it blank

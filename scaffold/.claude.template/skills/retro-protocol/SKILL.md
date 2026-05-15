@@ -3,8 +3,7 @@ name: retro-protocol
 description: >
   Load this skill when conducting a session retrospective. Defines what Claude
   analyses, how it structures findings, and how the retrospective artifact is
-  persisted. Loaded by /retrospective command and /exit command. Uses Sonnet 4.6.
-model: claude-sonnet-4-6
+  persisted. Loaded by /retrospective command and /exit command.
 ---
 
 # Retrospective Convention
@@ -13,9 +12,6 @@ This skill defines the session retrospective process for all projects built
 using this SDLC. The retrospective analyses the full session to
 surface patterns, inefficiencies, and improvements — making each session
 better than the last.
-
-Uses Sonnet 4.6 — needs reasoning capability to identify patterns, not just
-summarise.
 
 ---
 
@@ -64,7 +60,6 @@ Claude checks:
 - Were commits atomic — one concern per commit?
 - Was CI monitored after every push?
 - Were CI failures diagnosed and resolved correctly?
-- Were model announcements made at each gate transition?
 - Were documentation updates made **proactively** (same exchange as the
   structural change) or **reactively** (only after developer prompting)?
   Reactive updates are a process failure even if the end state is correct —
@@ -87,14 +82,12 @@ Next time: present each finding, wait for response, confirm fix, then move on.
 
 ### 2.2 Cost Dimension
 
-**Question:** Was the right model used at each gate? Were there avoidable
+**Question:** Which model was used at each gate? Were there avoidable
 token-expensive loops?
 
 Claude checks:
 
-- Was Haiku 4.5 used for CLASSIFY, PLAN, STANDUP, commit messages?
-- Was Sonnet 4.6 used for CODE, CODE REVIEW, SECURITY REVIEW?
-- Was Opus 4.6 used for DESIGN and DESIGN REVIEW?
+- Which model was active for each gate? Read from session logs.
 - Were there unnecessary back-and-forth loops that could have been avoided
   with better upfront clarity?
 - Were there long regeneration cycles caused by unclear requirements?
@@ -103,26 +96,40 @@ Claude checks:
 - How many total exchanges did the session take? Is that proportionate to
   the complexity of the work?
 
+**Model usage log:** Claude reports the model used for each gate, e.g.:
+
+```
+CLASSIFY:        claude-haiku-4-5
+DESIGN:          claude-opus-4-7
+DESIGN REVIEW:   claude-opus-4-7
+PLAN:            claude-sonnet-4-6
+TDD:             claude-sonnet-4-6
+CODE:            claude-sonnet-4-6
+CODE REVIEW:     claude-sonnet-4-6
+SECURITY REVIEW: claude-sonnet-4-6
+COMMIT:          claude-sonnet-4-6
+```
+
+If a gate's model cannot be determined from the logs, record it as `unknown`.
+
 **Cost efficiency rating:** Claude assigns one of:
-- EFFICIENT — model routing correct, minimal wasted exchanges
+- EFFICIENT — minimal wasted exchanges
 - ACCEPTABLE — minor inefficiencies, no significant waste
-- NEEDS IMPROVEMENT — wrong models used, significant avoidable loops
-- POOR — major model misrouting or excessive regeneration cycles
+- NEEDS IMPROVEMENT — significant avoidable loops or regeneration cycles
+- POOR — excessive regeneration cycles or repeated work
 
 **Example findings:**
 
 ```
-COST-1 [NEEDS IMPROVEMENT]
-Opus 4.6 used for PLAN gate: The planning gate was conducted using Opus 4.6
-instead of Haiku 4.5. PLAN is a lightweight task — Haiku is sufficient.
-Estimated excess cost: ~3x for this gate.
-Next time: confirm model selection at gate start before proceeding.
-
-COST-2 [IMPROVEMENT]
+COST-1 [IMPROVEMENT]
 3 regeneration cycles on DESIGN.md section 4: The proposed design was
 regenerated three times due to unclear requirements about the SQL schema.
 This could have been avoided by asking one clarifying question upfront.
 Next time: ask about SQL schema requirements before starting the design doc.
+
+COST-2 [POSITIVE]
+Session was proportionate: 47 exchanges for a feature that touched 6 files
+and added 3 new CLI flags. No significant wasted loops detected.
 ```
 
 ### 2.3 Effectiveness Dimension
@@ -209,7 +216,7 @@ Next time: present design section by section, resolve each before moving on.
 **Date:** {YYYY-MM-DD}
 **Session duration:** {approximate — based on artifact timestamps}
 **Work completed:** {brief description}
-**Model used:** Sonnet 4.6
+**Model used per gate:** {see Cost section}
 
 ---
 
@@ -297,7 +304,7 @@ Claude leaves this section blank — the developer fills it in.}
 
 ---
 
-**Committed by:** Claude (Sonnet 4.6) + {developer name}
+**Committed by:** Claude + {developer name}
 **Artifact path:** docs/retrospectives/{YYYY-MM-DD}-{slug}.md
 ```
 
@@ -380,7 +387,6 @@ docs(retrospective): add session retrospective {YYYY-MM-DD}
 
 When conducting a retrospective:
 
-- Always use Sonnet 4.6
 - Always read the last two retrospective artifacts before writing — check
   for recurring patterns
 - Always analyse all four dimensions — never skip one because "nothing

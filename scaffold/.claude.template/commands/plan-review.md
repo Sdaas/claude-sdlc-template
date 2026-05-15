@@ -1,18 +1,15 @@
 # /plan-review — Plan Review Dialogue
 
 Triggered by: workflows skill Step 5, or `/plan-review` (manual)
-Model: Haiku 4.5 (announce and wait for confirmation)
 
 Load the `workflows` skill Plan Review step and follow it exactly.
 
 ## Immediate Actions
 
-1. Announce model:
+1. Announce:
 
 ```
-Starting Plan Review (Haiku 4.5).
-Please switch to Haiku 4.5 before we proceed.
-Confirm when ready.
+Starting Plan Review.
 ```
 
 2. Read `docs/decisions/{slug}/PLAN.md` in full before saying anything.

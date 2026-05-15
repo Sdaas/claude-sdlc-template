@@ -168,7 +168,6 @@ Claude presents: what's done, what's in progress, what's blocked, and one
 specific suggested first action.
 
 **Skill involved:** `standup`
-**Model:** Haiku 4.5 (automatic — no model switch needed)
 
 If the previous session ended without `/exit`, Claude will require you to
 run `/retrospective` before accepting any task. This is enforced, not optional.
@@ -187,7 +186,7 @@ You have an idea: add a `--dry-run` flag to the deploy command.
 Claude immediately:
 - States the workflow: STANDARD — Feature Path
 - Creates the artifact folder: `docs/decisions/add-dry-run-flag/`
-- Announces: "Gate 2: DESIGN. Please switch to Opus 4.6."
+- Announces: "Gate 2: DESIGN."
 
 **Commands involved:** `feature`
 **Skills involved:** `workflows`, `python-cli`
@@ -205,7 +204,6 @@ to the design review gate automatically.
 
 **Artifact produced:** `docs/decisions/add-dry-run-flag/DESIGN.md`
 **Skills involved:** `design-doc`
-**Model:** Opus 4.6
 
 ---
 
@@ -221,14 +219,13 @@ resolved, the design is marked `APPROVED`.
 **Artifact produced:** `docs/decisions/add-dry-run-flag/DESIGN_REVIEW.md`
 **Commands involved:** `design-review`
 **Skills involved:** `design-doc`
-**Model:** Opus 4.6
 
 ---
 
 ### Step 4: Plan
 
-Claude switches to Haiku 4.5 and writes `PLAN.md` — its understanding of
-the task, proposed changes file by file, and test strategy.
+Claude writes `PLAN.md` — its understanding of the task, proposed changes
+file by file, and test strategy.
 
 Claude presents the plan point by point. You respond to each point. The plan
 is agreed when all points are confirmed.
@@ -236,14 +233,12 @@ is agreed when all points are confirmed.
 **Artifact produced:** `docs/decisions/add-dry-run-flag/PLAN.md`
 **Commands involved:** `plan-review`
 **Skills involved:** `workflows`
-**Model:** Haiku 4.5
 
 ---
 
 ### Step 5: TDD — Write the Failing Test First
 
-Claude switches to Sonnet 4.6. Before writing a single line of implementation,
-Claude answers three questions aloud:
+Before writing a single line of implementation, Claude answers three questions aloud:
 
 1. What behaviour am I testing?
 2. What is the simplest test that would fail right now?
@@ -253,7 +248,6 @@ Claude writes the failing test, runs it, and shows you the red output.
 You confirm the failure is correct. Only then does implementation begin.
 
 **Skills involved:** `tdd`
-**Model:** Sonnet 4.6
 
 ---
 
@@ -267,7 +261,6 @@ The pre-commit hook enforces TDD mechanically: if you commit `cli.py` without
 a corresponding test change, the commit is blocked.
 
 **Skills involved:** `tdd`, `python-cli`
-**Model:** Sonnet 4.6
 
 ---
 
@@ -279,7 +272,6 @@ Addresses them one at a time. You respond. Claude fixes, confirms, moves on.
 
 **Commands involved:** `code-review`
 **Skills involved:** `code-review`
-**Model:** Sonnet 4.6
 
 ---
 
@@ -293,18 +285,16 @@ The security review dialogue is appended to `CODE_REVIEW.md`.
 
 **Artifact produced:** `docs/decisions/add-dry-run-flag/CODE_REVIEW.md`
 **Skills involved:** `security`
-**Model:** Sonnet 4.6
 
 ---
 
 ### Step 9: Commit
 
-Claude switches back to Haiku 4.5. Generates commit messages following
-Conventional Commits format. Shows you each commit message and staged diff.
-You approve. Claude executes the commit. Never the other way around.
+Claude generates commit messages following Conventional Commits format.
+Shows you each commit message and staged diff. You approve. Claude executes
+the commit. Never the other way around.
 
 **Skills involved:** `git-workflow`
-**Model:** Haiku 4.5
 
 ---
 
@@ -320,7 +310,6 @@ Maximum 3 remediation attempts before Claude stops and escalates to you.
 
 **Commands involved:** `monitor`
 **Skills involved:** `github-actions`
-**Model:** Sonnet 4.6
 
 ---
 
@@ -339,8 +328,8 @@ and treats it as a new bug fix — the `REPRODUCE` gate fires immediately.
 With the feature merged and main green, Claude automatically runs a
 retrospective on the session.
 
-Claude analyses: was the process followed? Was the right model used at each
-gate? Did assumptions cause rework? Were communications clear?
+Claude analyses: was the process followed? Which model was used at each gate?
+Did assumptions cause rework? Were communications clear?
 
 Claude presents findings across four dimensions, proposes three top
 recommendations, and leaves the Developer Notes section blank for you to fill in.
@@ -349,7 +338,6 @@ You review and add notes. Claude commits the retrospective.
 **Artifact produced:** `docs/retrospectives/YYYY-MM-DD-add-dry-run-flag.md`
 **Commands involved:** `retrospective`
 **Skills involved:** `retrospective`
-**Model:** Sonnet 4.6
 
 ---
 
@@ -391,7 +379,6 @@ of the 17 steps in `release.sh`:
 
 **Commands involved:** `release`
 **Skills involved:** `release`, `homebrew`
-**Model:** Sonnet 4.6
 
 ---
 
@@ -399,62 +386,44 @@ of the 17 steps in `release.sh`:
 
 ```
 SESSION START
-  /standup ──────────────────── Haiku 4.5
+  /standup
 
 FEATURE WORKFLOW
   /feature "desc"
-    CLASSIFY ────────────────── Haiku 4.5
-    DESIGN ──────────────────── Opus 4.6   → DESIGN.md
-    DESIGN REVIEW ───────────── Opus 4.6   → DESIGN_REVIEW.md
-    PLAN ────────────────────── Haiku 4.5  → PLAN.md
-    PLAN REVIEW ─────────────── Haiku 4.5
-    TDD (red first) ─────────── Sonnet 4.6
-    CODE ────────────────────── Sonnet 4.6
-    CODE REVIEW ─────────────── Sonnet 4.6 → CODE_REVIEW.md (code section)
-    SECURITY REVIEW ─────────── Sonnet 4.6 → CODE_REVIEW.md (security section)
-    COMMIT ──────────────────── Haiku 4.5
-    CI MONITOR ──────────────── Sonnet 4.6
-    MERGE + MONITOR MAIN ─────── Sonnet 4.6
+    CLASSIFY
+    DESIGN ──────────────────── → DESIGN.md
+    DESIGN REVIEW ───────────── → DESIGN_REVIEW.md
+    PLAN ────────────────────── → PLAN.md
+    PLAN REVIEW
+    TDD (red first)
+    CODE
+    CODE REVIEW ─────────────── → CODE_REVIEW.md (code section)
+    SECURITY REVIEW ─────────── → CODE_REVIEW.md (security section)
+    COMMIT
+    CI MONITOR
+    MERGE + MONITOR MAIN
 
 BUG FIX WORKFLOW
   /bugfix "desc"
-    CLASSIFY ────────────────── Haiku 4.5
-    REPRODUCE (failing test) ─── Sonnet 4.6
-    CLASSIFY COMPLEXITY ─────── Haiku 4.5
+    CLASSIFY
+    REPRODUCE (failing test)
+    CLASSIFY COMPLEXITY
     [if non-trivial: DESIGN + DESIGN REVIEW]
     PLAN + PLAN REVIEW
     TDD → CODE → CODE REVIEW → SECURITY REVIEW → COMMIT → CI MONITOR → MERGE
 
 TRIVIAL WORKFLOW
   /trivial "desc"
-    CLASSIFY ────────────────── Haiku 4.5
+    CLASSIFY
     SURGICAL CHANGE
-    COMMIT ──────────────────── Haiku 4.5
+    COMMIT
     CI MONITOR
 
 SESSION END
   /exit
-    /retrospective ──────────── Sonnet 4.6 → docs/retrospectives/
+    /retrospective ──────────── → docs/retrospectives/
     SESSION_STATE.md ────────── (local only, not committed)
 ```
-
----
-
-## Model Routing Summary
-
-| Task / Gate              | Model      | How                        |
-|--------------------------|------------|----------------------------|
-| STANDUP, CLASSIFY        | Haiku 4.5  | YAML frontmatter / automatic |
-| Commit messages          | Haiku 4.5  | YAML frontmatter / automatic |
-| PLAN, PLAN REVIEW        | Haiku 4.5  | Claude announces, you switch |
-| CODE, CODE REVIEW        | Sonnet 4.6 | Claude announces, you switch |
-| SECURITY REVIEW          | Sonnet 4.6 | Claude announces, you switch |
-| CI MONITOR, RETROSPECTIVE| Sonnet 4.6 | Claude announces, you switch |
-| DESIGN, DESIGN REVIEW    | Opus 4.6   | Claude announces, you switch |
-| Architectural decisions  | Opus 4.6   | Claude announces, you switch |
-
-Claude announces the required model at the start of every interactive gate
-and waits for your confirmation before proceeding.
 
 ---
 

@@ -2,7 +2,6 @@
 
 Triggered by: workflows skill Steps 11-12 (automatic after push),
 or `/monitor` (manual)
-Model: Sonnet 4.6
 
 Load the `github-actions` skill Section 10 and follow it exactly.
 

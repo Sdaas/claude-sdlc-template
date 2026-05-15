@@ -1,7 +1,6 @@
 # /retrospective — Session Retrospective
 
 Triggered by: `/exit` sequence (automatic) or `/retrospective` (manual)
-Model: Sonnet 4.6
 
 Load the `retro-protocol` skill and follow it exactly.
 
@@ -10,7 +9,7 @@ Load the `retro-protocol` skill and follow it exactly.
 1. Announce:
 
 ```
-Starting session retrospective (Sonnet 4.6).
+Starting session retrospective.
 Reading session transcript and recent artifacts...
 ```
 

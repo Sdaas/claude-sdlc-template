@@ -1,7 +1,6 @@
 # /release — Release Process
 
 Triggered by: `/release` (manual only — never automatic)
-Model: Sonnet 4.6 (announce and wait for confirmation)
 
 ---
 
@@ -18,12 +17,10 @@ Model: Sonnet 4.6 (announce and wait for confirmation)
 
 ## Immediate Actions
 
-1. Announce model:
+1. Announce:
 
 ```
-Starting Release Process (Sonnet 4.6).
-Please switch to Sonnet 4.6 before we proceed.
-Confirm when ready.
+Starting Release Process.
 ```
 
 2. Present the Pre-Release Checklist below. Go through each item with the

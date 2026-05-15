@@ -1,7 +1,6 @@
 # /code-review — Code Review and Security Review Dialogue
 
 Triggered by: workflows skill Steps 8-9, or `/code-review` (manual)
-Model: Sonnet 4.6 (announce and wait for confirmation)
 
 Code review and security review run in the same session — security review
 is the final section, not a separate step. Load the `security` skill for
@@ -11,12 +10,10 @@ the security review section.
 
 ## Immediate Actions
 
-1. Announce model:
+1. Announce:
 
 ```
-Starting Code Review + Security Review (Sonnet 4.6).
-Please switch to Sonnet 4.6 before we proceed.
-Confirm when ready.
+Starting Code Review + Security Review.
 ```
 
 2. Identify changed files:
@@ -288,7 +285,7 @@ Every finding is classified as BLOCKING or NON-BLOCKING before the dialogue begi
 ## Code Review — {Feature or Bug Title}
 
 **Date:** {YYYY-MM-DD}
-**Reviewer:** Claude (Sonnet 4.6)
+**Reviewer:** Claude
 **Commit range:** {start-sha}..{end-sha}
 **Files reviewed:** {count} files ({N} Python, {N} shell, {N} SQL, {N} config)
 **Status:** IN REVIEW

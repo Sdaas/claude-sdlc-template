@@ -1,7 +1,7 @@
 # /retrospective — Session Retrospective
 
 Triggered by: `/exit` sequence (automatic) or `/retrospective` (manual)
-Model: Sonnet 4.6
+
 
 This command defines the session retrospective for work done on the template
 itself (not for projects bootstrapped from it). The primary work product here
@@ -14,7 +14,7 @@ workflow that does not apply here. This version replaces it.
 1. Announce:
 
 ```
-Starting session retrospective (Sonnet 4.6).
+Starting session retrospective.
 Reading session transcript and recent artifacts...
 ```
 
@@ -61,7 +61,7 @@ find .claude/commands scaffold/.claude/commands scaffold/.claude/skills -type f 
 
 ## Rules
 
-- Always use Sonnet 4.6
+
 - Always analyse all five dimensions — never skip one
 - Always include at least one POSITIVE finding per dimension
 - Always produce exactly three top recommendations
@@ -130,25 +130,13 @@ Claude checks:
 - For skills intended to be user-invocable: does a paired command exist?
   (Skills with no command are valid — flag only if the skill description implies
   a command should exist.)
-- Does each command file correctly state the model it uses (matching the skill's
-  YAML frontmatter)?
 - Are there any commands that reference artifacts, paths, or conventions that
   no longer exist or have been renamed?
-- Does `scaffold/CLAUDE.md` Section 4 (Model Routing) correctly reflect the
-  models declared in skill frontmatter?
 
 **Example findings:**
 
 ```
-COHERENCE-1 [IMPROVEMENT]
-Command model declaration mismatches skill frontmatter.
-retrospective.md states "Model: Sonnet 4.6" but the skill frontmatter declares
-claude-sonnet-4-6. These are consistent, but if the model were ever changed in
-the frontmatter only, the command description would silently lie to the developer.
-Next time: treat the command's model line as derived from the skill frontmatter —
-update both atomically.
-
-COHERENCE-2 [POSITIVE]
+COHERENCE-1 [POSITIVE]
 All skill references in commands resolve correctly.
 Every command that invokes "Load the X skill" has a corresponding
 skills/X/SKILL.md. No dangling references.
@@ -156,13 +144,10 @@ skills/X/SKILL.md. No dangling references.
 
 ### 1.3 Cost
 
-**Question:** Was the right model used? Were there avoidable token-expensive loops?
+**Question:** Were there avoidable token-expensive loops?
 
 Claude checks:
 
-- Was Sonnet 4.6 used for structural analysis, documentation updates, and review?
-- Was Opus 4.6 used only when architectural judgement was genuinely needed
-  (new skill design, SDLC process decisions)?
 - Were there unnecessary back-and-forth loops caused by unclear requirements?
 - Were there large rewrites of documentation that were immediately discarded?
 - Were there repeated reads of the same files?
@@ -173,11 +158,9 @@ Claude checks:
 
 ```
 COST-1 [NEEDS IMPROVEMENT]
-Opus 4.6 used for a documentation update.
-The standup.md deletion and OVERVIEW.md update were performed under Opus 4.6.
-These are mechanical, low-judgement tasks — Sonnet 4.6 is sufficient.
-Next time: reserve Opus for decisions about SDLC process design or new skill
-architecture. Documentation updates and file deletions do not require it.
+Repeated reads of the same large file.
+bootstrap.sh was read four times in the session when once at the start
+with targeted re-reads would have sufficed.
 ```
 
 ### 1.4 Effectiveness
@@ -249,7 +232,7 @@ easier to redirect.
 **Date:** {YYYY-MM-DD}
 **Session duration:** {approximate}
 **Work completed:** {brief description}
-**Model used:** Sonnet 4.6
+
 
 ---
 
@@ -325,7 +308,7 @@ Claude leaves this section blank.}
 
 ---
 
-**Committed by:** Claude (Sonnet 4.6) + {developer name}
+**Committed by:** Claude + {developer name}
 **Artifact path:** docs/retrospectives/{YYYY-MM-DD}-{slug}.md
 ```
 

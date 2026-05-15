@@ -394,17 +394,6 @@ claude
 Claude Code automatically reads `CLAUDE.md` on startup, loading all
 behavioral rules and process requirements.
 
-### Model Configuration
-
-Model routing is explained fully in `CLAUDE.md` Section 4. In summary:
-
-- **Haiku 4.5** — automated tasks (standup, commit messages, classify, plan)
-- **Sonnet 4.6** — implementation, code review, security review, CI monitoring
-- **Opus 4.6** — design, design review, architectural decisions
-
-Claude announces the required model at the start of each interactive gate.
-Switch the model in the Claude Code model selector before confirming.
-
 ### Skills and Commands
 
 Skills load automatically when Claude identifies a relevant task.
@@ -475,39 +464,19 @@ Claude will present the pre-release checklist and co-pilot you through
 
 ## Command Reference
 
-| Command            | When to use                                   | Model      |
-|--------------------|-----------------------------------------------|------------|
-| `/standup`         | Start of every session (automatic)            | Haiku 4.5  |
-| `/feature "desc"`  | Start implementing a new feature              | varies     |
-| `/bugfix "desc"`   | Start fixing a bug                            | varies     |
-| `/trivial "desc"`  | Make a trivial change (typo, docstring, etc.) | Haiku 4.5  |
-| `/design-review`   | Review the current DESIGN.md                  | Opus 4.6   |
-| `/plan-review`     | Review the current PLAN.md                    | Haiku 4.5  |
-| `/code-review`     | Review code + security for current changes    | Sonnet 4.6 |
-| `/monitor`         | Watch CI and auto-remediate failures          | Sonnet 4.6 |
-| `/retrospective`   | Analyse the current session                   | Sonnet 4.6 |
-| `/release`         | Co-pilot the release process                  | Sonnet 4.6 |
-| `/exit`            | End session gracefully                        | Sonnet 4.6 |
-
----
-
-## Model Selection Guide
-
-Switch models in the Claude Code model selector (top of the interface).
-
-| Task                                   | Model      |
-|----------------------------------------|------------|
-| Standup, classification, planning      | Haiku 4.5  |
-| Commit message generation              | Haiku 4.5  |
-| Writing and reviewing code             | Sonnet 4.6 |
-| Security review, CI monitoring         | Sonnet 4.6 |
-| Session retrospective                  | Sonnet 4.6 |
-| Writing and reviewing design docs      | Opus 4.6   |
-| Architectural decisions                | Opus 4.6   |
-
-Claude announces the required model at each gate transition and waits for
-confirmation before proceeding. You may override the model at any time —
-using a more capable model than specified is always acceptable.
+| Command            | When to use                                   |
+|--------------------|-----------------------------------------------|
+| `/standup`         | Start of every session (automatic)            |
+| `/feature "desc"`  | Start implementing a new feature              |
+| `/bugfix "desc"`   | Start fixing a bug                            |
+| `/trivial "desc"`  | Make a trivial change (typo, docstring, etc.) |
+| `/design-review`   | Review the current DESIGN.md                  |
+| `/plan-review`     | Review the current PLAN.md                    |
+| `/code-review`     | Review code + security for current changes    |
+| `/monitor`         | Watch CI and auto-remediate failures          |
+| `/retrospective`   | Analyse the current session                   |
+| `/release`         | Co-pilot the release process                  |
+| `/exit`            | End session gracefully                        |
 
 ---
 
@@ -723,13 +692,6 @@ echo '{"tool_name": "Bash", "tool_input": {"command": "uv run python --version"}
 ```
 
 ### Claude Code using wrong model
-
-Claude announces the required model at each gate transition. If the wrong
-model is active, switch it in the model selector before confirming to proceed.
-
-You can override at any time — just state it explicitly:
-"Use Sonnet for this even though Opus is recommended."
-Claude will log the override.
 
 ### SESSION_STATE.md missing after session close
 

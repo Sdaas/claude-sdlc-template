@@ -1,19 +1,16 @@
 # /design-review — Design Review Dialogue
 
 Triggered by: workflows skill Step 3, or `/design-review` (manual)
-Model: Opus 4.6 (announce and wait for confirmation)
 
 Load the `design-doc` skill and follow the Design Review Dialogue
 Protocol exactly (Section 4 of the design-doc skill).
 
 ## Immediate Actions
 
-1. Announce model:
+1. Announce:
 
 ```
-Starting Design Review (Opus 4.6).
-Please switch to Opus 4.6 before we proceed.
-Confirm when ready.
+Starting Design Review.
 ```
 
 2. Read `docs/decisions/{slug}/DESIGN.md` in full before saying anything.

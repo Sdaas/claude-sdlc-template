@@ -49,7 +49,7 @@ must be present. Sections marked OPTIONAL may be omitted with a note explaining 
 **Artifact folder:** docs/decisions/{slug}/
 **Date:** {YYYY-MM-DD}
 **Author:** Claude (session) + {developer name}
-**Model used:** Opus 4.6
+**Model used:** {active model}
 
 ---
 
@@ -170,7 +170,7 @@ APPROVED status is granted.
 ## 3. How Claude Writes a Design Document
 
 When `/feature` or a non-trivial `/bugfix` is triggered, Claude writes the design
-document using Opus 4.6 before anything else happens.
+document before anything else happens.
 
 Process:
 
@@ -196,7 +196,7 @@ Rules for writing the design:
 
 ## 4. Design Review Dialogue Protocol
 
-Design review uses Opus 4.6. It follows the standard review protocol from
+Design review follows the standard review protocol from
 CLAUDE.md Section 8, with these design-specific additions.
 
 ### What Claude Reviews For
@@ -234,7 +234,7 @@ Claude reads the complete DESIGN.md and evaluates it against these criteria:
 ## Design Review — {Feature Title}
 
 **Date:** {YYYY-MM-DD}
-**Reviewer:** Claude (Opus 4.6)
+**Reviewer:** Claude
 **Status:** IN REVIEW
 
 ### Findings
@@ -312,7 +312,6 @@ before using this format. When in doubt, use the full template.
 
 When writing or reviewing a design document:
 
-- Always use Opus 4.6 for both writing and reviewing design documents
 - Never use placeholders — all required sections must have real content
 - Always present the design section by section, waiting for developer response
 - Always include at least one real alternative in Alternatives Considered
