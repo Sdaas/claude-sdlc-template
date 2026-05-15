@@ -179,7 +179,14 @@ path = Path.home() / ".config" / "app"
 - CLI commands have help text on every argument and option
 - README updated if user-facing behaviour changed
 - CONTRIBUTING.md updated if developer workflow changed
+- OVERVIEW.md and CLAUDE.md updated if commands, skills, or gates changed
 - Inline comments explain why, not what
+
+Documentation update checks are **BLOCKING** if any of the following are true:
+- A file was added, renamed, or deleted and directory listings in docs were not updated
+- User-facing behaviour changed and README was not updated
+- Developer workflow changed and CONTRIBUTING.md was not updated
+- A command or skill was added or removed and CLAUDE.md Section 2 was not updated
 
 **Markdown quality** — applies to every `.md` file created or modified:
 

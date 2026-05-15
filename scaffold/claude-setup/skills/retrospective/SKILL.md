@@ -67,6 +67,10 @@ Claude checks:
 - Was CI monitored after every push?
 - Were CI failures diagnosed and resolved correctly?
 - Were model announcements made at each gate transition?
+- Were documentation updates made **proactively** (same exchange as the
+  structural change) or **reactively** (only after developer prompting)?
+  Reactive updates are a process failure even if the end state is correct —
+  flag as IMPROVEMENT, not POSITIVE.
 
 **Example findings:**
 

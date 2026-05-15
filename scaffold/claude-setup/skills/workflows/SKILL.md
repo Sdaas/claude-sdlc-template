@@ -125,6 +125,9 @@ DESIGN_REVIEW.md committed
 - Write `docs/decisions/{slug}/PLAN.md` containing:
   - Claude's understanding of the task in plain language
   - Proposed changes file by file
+  - Documentation updates required: list every doc file that will need
+    updating as a result of this change (README, CONTRIBUTING, OVERVIEW,
+    CLAUDE.md, etc.) — empty list is valid but must be stated explicitly
   - Test strategy: what will be tested and how
   - Artifact folder naming confirmation
   - Any gate exceptions with justification
