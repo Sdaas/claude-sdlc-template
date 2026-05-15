@@ -63,8 +63,13 @@ claude-sdlc-template/
 ├── LICENSE         MIT license for the template repo (Soumendra Daas 2026)
 ├── bootstrap.sh    Interview-driven project bootstrapper (15 steps) — run from repo root
 ├── docs/           Template-level session artifacts (retrospectives, etc.)
-└── tests/
-    └── test_bootstrap.sh   Automated test suite for bootstrap.sh
+├── tests/
+│   └── test_bootstrap.sh   Automated test suite for bootstrap.sh
+└── .claude/        Claude Code config for template maintainer sessions
+    ├── commands/
+    │   └── retrospective.md    /retrospective — customised for maintainer work
+    └── skills/
+        └── retrospective/SKILL.md  5-dimension retrospective (adds Template Coherence + Doc Sync)
 ```
 
 `bootstrap.sh` lives at the repo root. It reads from `scaffold/` and writes
@@ -89,7 +94,6 @@ The paths below show how they appear in the destination project (without the
 │   │   ├── feature.md               /feature — full standard workflow
 │   │   ├── bugfix.md                /bugfix  — reproduce-first workflow
 │   │   ├── trivial.md               /trivial — surgical change workflow
-│   │   ├── standup.md               /standup — session startup summary
 │   │   ├── retrospective.md         /retrospective — session analysis
 │   │   ├── design-review.md         /design-review — design review dialogue
 │   │   ├── plan-review.md           /plan-review — plan review dialogue
@@ -110,7 +114,7 @@ The paths below show how they appear in the destination project (without the
 │   │   ├── github-actions/SKILL.md  CI/CD workflows, failure diagnosis, remediation
 │   │   ├── release/SKILL.md         Release process specification (17 steps)
 │   │   ├── standup/SKILL.md         Session startup protocol — what to read, format
-│   │   ├── retrospective/SKILL.md   Session analysis — 4 dimensions, pattern detection
+│   │   ├── retrospective/SKILL.md   Session analysis — 4 dimensions (standard SDLC projects)
 │   │   └── workflows/SKILL.md       Gate sequences for feature, bugfix, trivial
 │   │
 │   ├── settings.json                Injects VIRTUAL_ENV into every Claude shell
